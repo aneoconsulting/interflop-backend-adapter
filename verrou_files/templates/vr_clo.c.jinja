@@ -1,0 +1,5 @@
+{% for i in range(backend_nb) %}
+else if (VG_XACT_CLOM (cloPD, arg, "--backend={{ backend_call_names[i] }}",
+                         vr.backend, {{ backend_names[i] }})) {}
+{% endfor %}
+

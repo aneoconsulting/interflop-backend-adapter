@@ -1,0 +1,12 @@
+--- ../verrou_repo/valgrind-3.22.0+verrou-dev/verrou/interflop_backends/statically_integrated_backends.h	2024-02-05 13:01:38.271284609 +0100
++++ orig/statically_integrated_backends.h	2024-02-05 15:45:13.990920500 +0100
+@@ -15,3 +15,9 @@
+ #include "backend_checkcancellation/interflop_checkcancellation.h"
+ #include "backend_checkdenorm/interflop_checkdenorm.h"
+ #include "backend_check_float_max/interflop_check_float_max.h"
++
++/*---------------------------------------------------------------------------*/
++/*----------------- GENERATED CODE FOR ADDITIONAL BACKENDS ------------------*/
++
++/*-------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS --------------*/
++/*---------------------------------------------------------------------------*/

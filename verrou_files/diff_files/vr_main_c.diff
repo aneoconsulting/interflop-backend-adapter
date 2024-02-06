@@ -1,0 +1,29 @@
+--- ../verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_main.c	2024-02-06 11:55:46.982164434 +0100
++++ full_modified_files/vr_main.c	2024-02-06 11:53:27.122186486 +0100
+@@ -59,6 +59,11 @@
+ struct interflop_backend_interface_t backend_check_float_max;
+ void* backend_check_float_max_context;
+ 
++/*---------------------------------------------------------------------------*/
++/*---------------- GENERATED CODE FOR ADDITIONAL BACKENDS 1 -----------------*/
++
++/*------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS 1 -------------*/
++/*---------------------------------------------------------------------------*/
+ 
+ 
+ 
+@@ -1391,6 +1396,14 @@
+ #undef bcNameWithCC
+    }
+ 
++
++/*---------------------------------------------------------------------------*/
++/*---------------- GENERATED CODE FOR ADDITIONAL BACKENDS 2 -----------------*/
++
++/*------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS 2 -------------*/
++/*---------------------------------------------------------------------------*/
++
++
+ #ifdef USE_VERROU_QUAD
+    if(vr.backend==vr_mcaquad && !checkCancellation){
+ #define IGNORESQRT

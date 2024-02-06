@@ -1,0 +1,17 @@
+{% for backend_name in backend_names %}
+    if(vr.backend=={{ backend_name }} && !checkCancellation){
+#define bcName(OP) "{{ backend_name }}"#OP, {{ backend_name }}##OP
+#define bcNameWithCC(OP) "{{ backend_name }}"#OP, {{ backend_name }}##OP
+#include "vr_instrumentOp_impl.h"
+#undef bcName
+#undef bcNameWithCC
+   }
+   if(vr.backend=={{ backend_name }} && checkCancellation){
+#define bcName(OP) "{{ backend_name }}"#OP, {{ backend_name }}##OP
+#define bcNameWithCC(OP) "{{ backend_name }}checkcancellation"#OP, {{ backend_name }}checkcancellation##OP
+#include "vr_instrumentOp_impl.h"
+#undef bcName
+#undef bcNameWithCC
+   }
+
+{% endfor %}

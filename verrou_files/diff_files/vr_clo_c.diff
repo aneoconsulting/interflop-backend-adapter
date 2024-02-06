@@ -1,0 +1,15 @@
+--- ../verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_clo.c	2024-02-05 13:01:38.281284609 +0100
++++ orig/vr_clo.c	2024-02-05 15:44:54.800923790 +0100
+@@ -162,6 +162,12 @@
+   else if (VG_XACT_CLOM (cloPD, arg, "--backend=checkdenorm",
+                          vr.backend, vr_checkdenorm)) {}
+ 
++/*---------------------------------------------------------------------------*/
++/*----------------- GENERATED CODE FOR ADDITIONAL BACKENDS ------------------*/
++
++/*-------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS --------------*/
++/*---------------------------------------------------------------------------*/
++
+   //Option --rounding-mode=
+   else if (VG_XACT_CLOM (cloPD, arg, "--rounding-mode=random",
+                          vr.roundingMode, VR_RANDOM)) {}
