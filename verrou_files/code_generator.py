@@ -110,17 +110,20 @@ def add_template_lines(header_line, lines, template_path):
 def main():
     for i in range(len(VERROU_FILES)):
         with open(VERROU_FILES[i], "r") as file:
-
-            if GENERATED_HEADERS[i] not in file:
-                patch_file(DIFF_FILES[i])
-                with open(VERROU_FILES[i], "r") as refreshed_file:
-                    lines = refreshed_file.readlines()
-                header_line = lines.index(GENERATED_HEADERS[i])
-            else:
-                with open(VERROU_FILES[i], "r") as refreshed_file:
-                    lines = refreshed_file.readlines()
+            try:
+                lines = file.readlines()
                 header_line = lines.index(GENERATED_HEADERS[i]) + 1
-                lines = remove_prev_gen_code(lines, header_line, i)
+            except (ValueError):
+                lines = []
+                header_line = -1
+
+        if header_line < 0:
+            patch_file(DIFF_FILES[i])
+            with open(VERROU_FILES[i], "r") as refreshed_file:
+                lines = refreshed_file.readlines()
+            header_line = lines.index(GENERATED_HEADERS[i]) + 1
+        else:
+            lines = remove_prev_gen_code(lines, header_line, i)
 
         lines = add_template_lines(header_line, lines, TEMPLATES_FILES[i])
 
