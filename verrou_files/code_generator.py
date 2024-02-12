@@ -1,87 +1,10 @@
 #!/bin/python3.11
 
+from os import makedirs
 from patch import fromfile
 from jinja2 import Template
 
-
-BACKEND_ND = 1
-BACKEND_NAME = "vr_custom"
-BACKEND_CALL_NAME = "custom"
-
-VERROU_FILES = [
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_main.c",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_main.c",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_main.h",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_clo.c",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/Makefile.am",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/interflop_backends/statically_integrated_backends.h",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py"
-]
-
-DIFF_FILES = [
-    "diff_files/vr_main_c.diff",
-    "diff_files/vr_main_c.diff",
-    "diff_files/vr_main_h.diff",
-    "diff_files/vr_clo_c.diff",
-    "diff_files/makefile_am.diff",
-    "diff_files/statically_integrated_backends_h.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff"
-]
-
-TEMPLATES_FILES = [
-    "templates/vr_main.c1.jinja",
-    "templates/vr_main.c2.jinja",
-    "templates/vr_main.h.jinja",
-    "templates/vr_clo.c.jinja",
-    "templates/makefile.am.jinja",
-    "templates/statically_integrated_backends.h.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja"
-]
-
-GENERATED_HEADERS = [
-    "/*---------------- GENERATED CODE FOR ADDITIONAL BACKENDS 1 -----------------*/\n",
-    "/*---------------- GENERATED CODE FOR ADDITIONAL BACKENDS 2 -----------------*/\n",
-    "  /* GENERATED ADDITONAL BACKEND ENUM */\n",
-    "/*----------------- GENERATED CODE FOR ADDITIONAL BACKENDS ------------------*/\n",
-    "##--------------- GENERATED AUTOMAKE FOR ADDITIONAL BACKENDS ----------------##\n",
-    "/*----------------- GENERATED CODE FOR ADDITIONAL BACKENDS ------------------*/\n",
-    "        # GENERATED ADDITIONAL BACKEND 1 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 2 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 3 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 4 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 5 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 6 #\n"
-]
-
-GENERATED_FOOTERS = [
-    "/*------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS 1 -------------*/\n",
-    "/*------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS 2 -------------*/\n",
-    "  /* END OF GENERATED ADDITONAL BACKEND ENUM */\n",
-    "/*-------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS --------------*/\n",
-    "##------------ END OF GENERATED AUTOMAKE FOR ADDITIONAL BACKENDS ------------##\n",
-    "/*-------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS --------------*/\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 1 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 2 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 3 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 4 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 5 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 6 #\n"
-]
+from code_generator_const import *
 
 
 def patch_file(diff_path):
@@ -96,10 +19,56 @@ def remove_prev_gen_code(lines, head_line, index):
     return lines
 
 
+def get_op_codes():
+    op_codes = []
+
+    with open(BACKEND_PATH, "r") as file:
+        lines = file.readlines()
+
+    for proto in FUNCTIONS_PROTOS:
+        code = ""
+        brackets_count = 0
+        begin_line = 0
+
+        while begin_line < len(lines) and not lines[begin_line].startswith(proto):
+            begin_line += 1
+        if begin_line < len(lines):
+            while (first_brack := lines[begin_line].find("{")) < 0:
+                begin_line += 1
+                if begin_line >= len(lines):
+                    return []
+            end_line = begin_line
+            brackets_count += lines[end_line].count("{")
+            brackets_count -= lines[end_line].count("}")
+            while brackets_count > 0:
+                end_line += 1
+                if end_line >= len(lines):
+                    return []
+                brackets_count += lines[end_line].count("{")
+                brackets_count -= lines[end_line].count("}")
+
+            if brackets_count < 0:
+                return []
+            last_bracket = lines[end_line].rfind("}")
+            if begin_line == end_line:
+                code += lines[begin_line][first_brack+1:last_bracket-2]
+            else:
+                code += lines[begin_line][first_brack+1:]
+                for i in range(begin_line+1, end_line):
+                    code += lines[i]
+                code += lines[end_line][:last_bracket-2]
+
+            op_codes.append(code)
+        else:
+            op_codes.append("")
+
+    return op_codes
+
+
 def add_template_lines(header_line, lines, template_path):
     with open(template_path, "r") as file:
         template = Template(file.read())
-    correct_text = template.render(backend_nb=BACKEND_ND, backend_names=[BACKEND_NAME], backend_call_names=[BACKEND_CALL_NAME])
+    correct_text = template.render(backend_nb=BACKEND_NB, backend_names=[BACKEND_NAME], backend_call_names=[BACKEND_CALL_NAME])
     correct_lines = correct_text.splitlines(keepends=True)
 
     lines_applied = lines[:header_line] + correct_lines + lines[header_line:]
@@ -107,7 +76,7 @@ def add_template_lines(header_line, lines, template_path):
     return lines_applied
 
 
-def main():
+def prepare_verrou_files_for_new_backends():
     for i in range(len(VERROU_FILES)):
         with open(VERROU_FILES[i], "r") as file:
             try:
@@ -129,6 +98,55 @@ def main():
 
         with open(VERROU_FILES[i], "w") as file:
             file.writelines(lines)
+
+
+def create_backend_files():
+    op_codes = get_op_codes()
+
+    with open(TEMPLATE_BACK_C, "r") as file:
+        c_template = Template(file.read())
+    correct_c = c_template.render(
+        backend_name=BACKEND_NAME,
+        backend_call_name=BACKEND_CALL_NAME,
+        upper_backend_call_name=BACKEND_CALL_NAME.upper(),
+        add_float_code=op_codes[0],
+        sub_float_code=op_codes[1],
+        mul_float_code=op_codes[2],
+        div_float_code=op_codes[3],
+        cmp_float_code=op_codes[4],
+        madd_float_code="",
+        sqrt_float_code="",
+
+        add_double_code=op_codes[5],
+        sub_double_code=op_codes[6],
+        mul_double_code=op_codes[7],
+        div_double_code=op_codes[8],
+        cmp_double_code=op_codes[9],
+        madd_double_code="",
+        sqrt_double_code=""
+    )
+    with open(COMPLETE_BACK_C, "w") as file:
+        file.write(correct_c)
+
+    with open(TEMPLATE_BACK_H, "r") as file:
+        h_template = Template(file.read())
+    correct_h = h_template.render(
+        backend_name=BACKEND_NAME,
+        backend_call_name=BACKEND_CALL_NAME,
+        upper_backend_call_name=BACKEND_CALL_NAME.upper()
+    )
+
+    with open(COMPLETE_BACK_H, "w") as file:
+        file.write(correct_h)
+
+
+def add_new_backends():
+    create_backend_files()
+
+
+def main():
+    prepare_verrou_files_for_new_backends()
+    add_new_backends()
 
 
 if __name__ == "__main__":
