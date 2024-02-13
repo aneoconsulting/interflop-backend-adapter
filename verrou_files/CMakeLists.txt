@@ -18,16 +18,18 @@ foreach(subdirectory ${subdirectories})
         set(BACKEND_FOLD_PATH "${CMAKE_CURRENT_LIST_DIR}/verrou_repo/valgrind-3.22.0+verrou-dev/verrou/interflop_backends/backend_${FOLDER_NAME}")
 
         file(MAKE_DIRECTORY "${BACKEND_FOLD_PATH}")
-        file(COPY_FILE "${subdirectory}/complete_backend.cpp"
-            "${BACKEND_FOLD_PATH}/interflop_custom.cxx")
-        file(COPY_FILE "${subdirectory}/complete_backend.h"
-            "${BACKEND_FOLD_PATH}/interflop_custom.h")
+        file(RENAME "${subdirectory}/complete_backend.cpp"
+            "${BACKEND_FOLD_PATH}/interflop_${FOLDER_NAME}.cxx")
+        file(RENAME "${subdirectory}/complete_backend.h"
+            "${BACKEND_FOLD_PATH}/interflop_${FOLDER_NAME}.h")
     endif()
 endforeach()
 
-message(STATUS "Building and compiling verrou.")
-execute_process(COMMAND "${VALGRIND_PATH}/autogen.sh" WORKING_DIRECTORY ${VALGRIND_PATH})
-execute_process(COMMAND "${VALGRIND_PATH}/configure --enable-only64bit --prefix=${CMAKE_CURRENT_LIST_DIR}/verrou_repo/verrou_software"
-                WORKING_DIRECTORY ${VALGRIND_PATH})
-execute_process(COMMAND "make" WORKING_DIRECTORY ${VALGRIND_PATH})
-execute_process(COMMAND "make install" WORKING_DIRECTORY ${VALGRIND_PATH})
+execute_process(COMMAND python3 generateBackendInterOperator.py WORKING_DIRECTORY "${VALGRIND_PATH}/verrou/")
+
+message(STATUS "Building and compiling verrou. ${VALGRIND_PATH}")
+execute_process(COMMAND "./autogen.sh" WORKING_DIRECTORY ${VALGRIND_PATH} RESULT_VARIABLE ret)
+execute_process(COMMAND "./configure" "--enable-only64bit" "--prefix=${CMAKE_CURRENT_LIST_DIR}/verrou_repo/verrou_software"
+                WORKING_DIRECTORY "${VALGRIND_PATH}" RESULT_VARIABLE ret)
+execute_process(COMMAND "make" WORKING_DIRECTORY ${VALGRIND_PATH} RESULT_VARIABLE ret)
+execute_process(COMMAND "make" "install" WORKING_DIRECTORY ${VALGRIND_PATH} RESULT_VARIABLE ret)

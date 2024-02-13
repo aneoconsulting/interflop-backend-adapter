@@ -1,11 +1,11 @@
-BACKEND_NB = 1
-BACKEND_NAME = "vr_custom"
-BACKEND_CALL_NAME = "custom"
+#BACKEND_NB = 1
+#BACKEND_NAME = "vr_custom"
+#BACKEND_CALL_NAME = "custom"
 
-BACKEND_PATH = "../backend/custom/backend.cpp"
+#BACKEND_PATH = "../backend/custom/backend.cpp"
 
-COMPLETE_BACK_C = "../backend/custom/complete_backend.cpp"
-COMPLETE_BACK_H = "../backend/custom/complete_backend.h"
+#COMPLETE_BACK_C = "../backend/custom/complete_backend.cpp"
+#COMPLETE_BACK_H = "../backend/custom/complete_backend.h"
 TEMPLATE_BACK_C = "templates/interflop_back_code.cxx.jinja"
 TEMPLATE_BACK_H = "templates/interflop_back_header.h.jinja"
 
