@@ -42,7 +42,7 @@ VERROU_SOURCES_COMMON = \
 
 
 ADDITIONAL_BACKEND_SOURCES = \
-    {% for backend_name in backend_names %}interflop_backends/backend_custom/interflop_{{ backend_name }}.cxx {% endfor %}
+    {% for backend_name in backend_names %}interflop_backends/backend_{{ backend_name }}/interflop_{{ backend_name }}.cxx {% endfor %}
 
 VERROU_SOURCES_COMMON += $(ADDITIONAL_BACKEND_SOURCES)
 
