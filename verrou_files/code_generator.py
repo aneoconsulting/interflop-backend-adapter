@@ -39,6 +39,15 @@ TEMPLATE_BACK_H = "templates/interflop_back_header.h.jinja"
 
 
 def complete_verrou_sources(backends_infos):
+    """
+    Use the infos to complete the verrou source code templates and save the completed files in the folder "completed_verrou_files"
+
+    Args:
+        backends_infos: dictionary of three lists:
+            - "names":      the names of every backend folder
+            - "vr_names":   same as "names" but with the string "vr_" at the beginning of each element
+            - "paths":      the relative path of every backend folder
+    """
     for name in VERROU_SOURCE_NAMES:
         with open(TEMPLATES_PATH + name + ".jinja", "r") as file:
             template = Template(file.read())
@@ -50,6 +59,15 @@ def complete_verrou_sources(backends_infos):
 
 
 def get_backends_infos():
+    """
+    Take all the backend folders' names and path and return it as a dictionary containing three lists
+
+    Returns:
+        dictionary of three lists:
+            - "names":      the names of every backend folder
+            - "vr_names":   same as "names" but with the string "vr_" at the beginning of each element
+            - "paths":      the relative path of every backend folder
+    """
     backends_infos = {
                         "names": [],
                         "vr_names": [],
