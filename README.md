@@ -54,8 +54,8 @@ patch -p1 <verrou/valgrind.diff
 For any build you need, you should use Cmake with the good options.
 
 ```
--BUILD_FOR_PENE=ON for PENE
--BUILD_FOR_VERIFICARLO=ON for Verificarlo
+-DBUILD_FOR_PENE=ON for PENE
+-DBUILD_FOR_VERIFICARLO=ON for Verificarlo
 -DBUILD_FOR_VERROU=ON for Verrou
 ```
 
@@ -79,7 +79,7 @@ Once the build finished, you should source on the "verrou_files/verrou_repo/verr
 
 ## Write a new backend
 
-Create a folder with the name you want for your backend in the backend folder.
+Create a folder in the backend folder with the name you want.
 Your functions should be written in a file "backend.cpp" with specific names and syntax:
 
 ```bash
