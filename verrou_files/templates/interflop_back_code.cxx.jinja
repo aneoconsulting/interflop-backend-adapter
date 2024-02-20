@@ -35,7 +35,7 @@
    The GNU Lesser General Public License is contained in the file COPYING.
 */
 
-#include "interflop_{{ backend_call_name }}.h"
+#include "interflop_{{ backend_name }}.h"
 #include <stddef.h>
 #include <limits>
 #include <cmath>
@@ -43,23 +43,23 @@
 #include "../interflop_verrou/vr_fma.hxx"
 #include "../interflop_verrou/vr_sqrt.hxx"
 
-{{ backend_call_name }}_conf_t {{ backend_call_name }}_conf;
+{{ backend_name }}_conf_t {{ backend_name }}_conf;
 
 template <typename REAL>
-void ifcd_{{ backend_call_name }} (const REAL & a, const REAL & b, const REAL & r);
+void ifcd_{{ backend_name }} (const REAL & a, const REAL & b, const REAL & r);
 
 
 // * Global variables & parameters
 
-void (*{{ backend_call_name }}_ifcd_denormHandler)(void)=NULL;
-void (*{{ backend_call_name }}_ifcd_panicHandler)(const char*)=NULL;
+void (*{{ backend_name }}_ifcd_denormHandler)(void)=NULL;
+void (*{{ backend_name }}_ifcd_panicHandler)(const char*)=NULL;
 
-void {{ backend_call_name }}_set_denorm_handler(void (*denormHandler)(void)){
-  {{ backend_call_name }}_ifcd_denormHandler=denormHandler;
+void {{ backend_name }}_set_denorm_handler(void (*denormHandler)(void)){
+  {{ backend_name }}_ifcd_denormHandler=denormHandler;
 }
 
-void {{ backend_call_name }}_set_panic_handler(void (*panicHandler)(const char*)){
-  {{ backend_call_name }}_ifcd_panicHandler=panicHandler;
+void {{ backend_name }}_set_panic_handler(void (*panicHandler)(const char*)){
+  {{ backend_name }}_ifcd_panicHandler=panicHandler;
 }
 
 
@@ -67,10 +67,10 @@ void {{ backend_call_name }}_set_panic_handler(void (*panicHandler)(const char*)
 template<class REAL>
 void flushToZeroAndCheck(REAL* res){
   if( ( ((*res >= 0) ? (*res): -(*res)))   <  std::numeric_limits<REAL>::min()  && *res !=0.){
-    if({{ backend_call_name }}_ifcd_denormHandler!=0){
-      (*{{ backend_call_name }}_ifcd_denormHandler)();
+    if({{ backend_name }}_ifcd_denormHandler!=0){
+      (*{{ backend_name }}_ifcd_denormHandler)();
     }
-    if( {{ backend_call_name }}_conf.flushtozero ){
+    if( {{ backend_name }}_conf.flushtozero ){
       *res=0.;
     }
   }
@@ -79,59 +79,59 @@ void flushToZeroAndCheck(REAL* res){
 
 
 // * C interface
-void IF{{ upper_backend_call_name }}_FCTNAME(configure)({{ backend_call_name }}_conf_t mode, void* context) {
-  {{ backend_call_name }}_conf=mode;
+void IF{{ upper_backend_name }}_FCTNAME(configure)({{ backend_name }}_conf_t mode, void* context) {
+  {{ backend_name }}_conf=mode;
 }
 
-void IF{{ upper_backend_call_name }}_FCTNAME(finalize)(void* context){
+void IF{{ upper_backend_name }}_FCTNAME(finalize)(void* context){
 }
 
-const char* IF{{ upper_backend_call_name }}_FCTNAME(get_backend_name)() {
-  return "{{ backend_call_name }}";
+const char* IF{{ upper_backend_name }}_FCTNAME(get_backend_name)() {
+  return "{{ backend_name }}";
 }
 
-const char* IF{{ upper_backend_call_name }}_FCTNAME(get_backend_version)() {
+const char* IF{{ upper_backend_name }}_FCTNAME(get_backend_version)() {
   return "1.x-dev";
 }
 
 
-void IF{{ upper_backend_call_name }}_FCTNAME(add_double) (double a, double b, double* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(add_double) (double a, double b, double* res,void* context) {
   {{ add_double_code }}
 }
 
-void IF{{ upper_backend_call_name }}_FCTNAME(add_float) (float a, float b, float* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(add_float) (float a, float b, float* res,void* context) {
   {{ add_float_code }}
 }
 
 
-void IF{{ upper_backend_call_name }}_FCTNAME(sub_double) (double a, double b, double* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(sub_double) (double a, double b, double* res,void* context) {
   {{ sub_double_code }}
 }
 
-void IF{{ upper_backend_call_name }}_FCTNAME(sub_float) (float a, float b, float* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(sub_float) (float a, float b, float* res,void* context) {
   {{ sub_float_code }}
 }
 
 
-void IF{{ upper_backend_call_name }}_FCTNAME(mul_double) (double a, double b, double* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(mul_double) (double a, double b, double* res,void* context) {
   {{ mul_double_code }}
 }
 
-void IF{{ upper_backend_call_name }}_FCTNAME(mul_float) (float a, float b, float* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(mul_float) (float a, float b, float* res,void* context) {
   {{ mul_float_code }}
 }
 
 
-void IF{{ upper_backend_call_name }}_FCTNAME(div_double) (double a, double b, double* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(div_double) (double a, double b, double* res,void* context) {
   {{ div_double_code }}
 }
 
-void IF{{ upper_backend_call_name }}_FCTNAME(div_float) (float a, float b, float* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(div_float) (float a, float b, float* res,void* context) {
   {{ div_float_code }}
 }
 
 
-void IF{{ upper_backend_call_name }}_FCTNAME(madd_float) (float a, float b, float c, float* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(madd_float) (float a, float b, float c, float* res,void* context) {
 #ifdef USE_VERROU_FMA
   {{ madd_float_code }}
 #else
@@ -140,7 +140,7 @@ void IF{{ upper_backend_call_name }}_FCTNAME(madd_float) (float a, float b, floa
   flushToZeroAndCheck(res);
 }
 
-void IF{{ upper_backend_call_name }}_FCTNAME(madd_double) (double a, double b, double c, double* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(madd_double) (double a, double b, double c, double* res,void* context) {
 #ifdef USE_VERROU_FMA
   {{ madd_double_code }}
 #else
@@ -150,7 +150,7 @@ void IF{{ upper_backend_call_name }}_FCTNAME(madd_double) (double a, double b, d
 }
 
 
-void IF{{ upper_backend_call_name }}_FCTNAME(sqrt_float) (float a, float* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(sqrt_float) (float a, float* res,void* context) {
 #ifdef USE_VERROU_SQRT
   {{ sqrt_float_code }}
 #else
@@ -159,7 +159,7 @@ void IF{{ upper_backend_call_name }}_FCTNAME(sqrt_float) (float a, float* res,vo
   flushToZeroAndCheck(res);
 }
 
-void IF{{ upper_backend_call_name }}_FCTNAME(sqrt_double) (double a, double* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(sqrt_double) (double a, double* res,void* context) {
 #ifdef USE_VERROU_SQRT
   {{ sqrt_double_code }}
 #else
@@ -174,7 +174,7 @@ void IF{{ upper_backend_call_name }}_FCTNAME(sqrt_double) (double a, double* res
 
 
 
-void IF{{ upper_backend_call_name }}_FCTNAME(cast_double_to_float) (double a, float* res,void* context) {
+void IF{{ upper_backend_name }}_FCTNAME(cast_double_to_float) (double a, float* res,void* context) {
   *res=(float)a;
   flushToZeroAndCheck(res);
 }
@@ -182,26 +182,26 @@ void IF{{ upper_backend_call_name }}_FCTNAME(cast_double_to_float) (double a, fl
 
 
 
-struct interflop_backend_interface_t IF{{ upper_backend_call_name }}_FCTNAME(init)(void ** context){
+struct interflop_backend_interface_t IF{{ upper_backend_name }}_FCTNAME(init)(void ** context){
   struct interflop_backend_interface_t config=interflop_backend_empty_interface;
 
-  config.add_float =& IF{{ upper_backend_call_name }}_FCTNAME(add_float);
-  config.sub_float =& IF{{ upper_backend_call_name }}_FCTNAME(sub_float);
-  config.mul_float =& IF{{ upper_backend_call_name }}_FCTNAME(mul_float);
-  config.div_float =& IF{{ upper_backend_call_name }}_FCTNAME(div_float);
+  config.add_float =& IF{{ upper_backend_name }}_FCTNAME(add_float);
+  config.sub_float =& IF{{ upper_backend_name }}_FCTNAME(sub_float);
+  config.mul_float =& IF{{ upper_backend_name }}_FCTNAME(mul_float);
+  config.div_float =& IF{{ upper_backend_name }}_FCTNAME(div_float);
 
-  config.add_double =& IF{{ upper_backend_call_name }}_FCTNAME(add_double);
-  config.sub_double =& IF{{ upper_backend_call_name }}_FCTNAME(sub_double);
-  config.mul_double =& IF{{ upper_backend_call_name }}_FCTNAME(mul_double);
-  config.div_double =& IF{{ upper_backend_call_name }}_FCTNAME(div_double);
+  config.add_double =& IF{{ upper_backend_name }}_FCTNAME(add_double);
+  config.sub_double =& IF{{ upper_backend_name }}_FCTNAME(sub_double);
+  config.mul_double =& IF{{ upper_backend_name }}_FCTNAME(mul_double);
+  config.div_double =& IF{{ upper_backend_name }}_FCTNAME(div_double);
 
 
-  config.cast_double_to_float=& IF{{ upper_backend_call_name }}_FCTNAME(cast_double_to_float);
+  config.cast_double_to_float=& IF{{ upper_backend_name }}_FCTNAME(cast_double_to_float);
 
-  config.madd_float =& IF{{ upper_backend_call_name }}_FCTNAME(madd_float);
-  config.madd_double =& IF{{ upper_backend_call_name }}_FCTNAME(madd_double);
+  config.madd_float =& IF{{ upper_backend_name }}_FCTNAME(madd_float);
+  config.madd_double =& IF{{ upper_backend_name }}_FCTNAME(madd_double);
 
-  config.finalize =& IF{{ upper_backend_call_name }}_FCTNAME(finalize);
+  config.finalize =& IF{{ upper_backend_name }}_FCTNAME(finalize);
 
   return config;
 }

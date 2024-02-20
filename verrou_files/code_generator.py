@@ -21,8 +21,32 @@ FUNCTIONS_BEGIN = [
     "sqrt_float:", "sqrt_double:"
 ]
 
+class backend:
+    name = ""
+    op_codes = {}
 
-def complete_verrou_sources(names, vr_names):
+    def op_codes_list_to_dict(self, op_codes_list):
+        self.op_codes["add_float"] = op_codes_list[0]
+        self.op_codes["add_double"] = op_codes_list[1]
+        self.op_codes["sub_float"] = op_codes_list[2]
+        self.op_codes["sub_double"] = op_codes_list[3]
+        self.op_codes["mul_float"] = op_codes_list[4]
+        self.op_codes["mul_double"] = op_codes_list[5]
+        self.op_codes["div_float"] = op_codes_list[6]
+        self.op_codes["div_double"] = op_codes_list[7]
+        self.op_codes["madd_float"] = op_codes_list[8]
+        self.op_codes["madd_double"] = op_codes_list[9]
+        self.op_codes["sqrt_float"] = op_codes_list[10]
+        self.op_codes["sqrt_double"] = op_codes_list[11]
+
+
+    def __init__(self, name, op_codes_list):
+        self.name = name
+        self.op_codes_list_to_dict(op_codes_list)
+
+
+
+def complete_verrou_sources(backend_list):
     """
     Use the names of the backends to complete the verrou source code templates and save the completed files in the folder "completed_verrou_files"
 
@@ -30,6 +54,8 @@ def complete_verrou_sources(names, vr_names):
         names:      list of names of every backend folder
         vr_names:   same as the names list but with the string "vr_" at the beginning of each element
     """
+    names = [backend.name for backend in backend_list]
+    vr_names = [("vr_" + name) for name in names]
     for template_name in listdir(TEMPLATES_PATH):
         if path.isfile(TEMPLATES_PATH + template_name) and not template_name.startswith("interflop_back"):
             with open(TEMPLATES_PATH + template_name, "r") as file:
@@ -88,21 +114,17 @@ def get_backends_infos():
         vr_names:   same as the names list but with the string "vr_" at the beginning of each element
         op_codes:   list of list of every fuctions' bodies to be implemented in the backend completed code
     """
-    names = []
-    vr_names = []
-    op_codes = []
+    backend_list = []
 
     list_back = listdir(BACKENDS_FOLDER_PATH)
     for back in list_back:
         if path.isdir(BACKENDS_FOLDER_PATH + back):
-            names.append(back)
-            vr_names.append("vr_" + back)
-            op_codes.append(get_op_codes(BACKENDS_FOLDER_PATH + back))
+            backend_list.append(backend(back, get_op_codes(BACKENDS_FOLDER_PATH + back)))
 
-    return names, vr_names, op_codes
+    return backend_list
 
 
-def create_backend_files(names, vr_names, op_codes):
+def create_backend_files(backend_list):
     """
     Iterate on each backend's names, get their implemented functions and complete the templates of
     the verrou backends then store them completed files folder
@@ -115,38 +137,35 @@ def create_backend_files(names, vr_names, op_codes):
     with open(TEMPLATES_PATH + TEMPLATE_BACK_C, "r") as file:
         c_template = Template(file.read())
 
-    for i in range(len(names)):
+    for backend in backend_list:
         correct_c = c_template.render(
-            backend_name=vr_names[i],
-            backend_call_name=names[i],
-            upper_backend_call_name=names[i].upper(),
+            backend_name=backend.name,
+            upper_backend_name=backend.name.upper(),
 
-            add_float_code=op_codes[i][0], add_double_code=op_codes[i][1],
-            sub_float_code=op_codes[i][2], sub_double_code=op_codes[i][3],
-            mul_float_code=op_codes[i][4], mul_double_code=op_codes[i][5],
-            div_float_code=op_codes[i][6], div_double_code=op_codes[i][7],
-
-            madd_float_code=op_codes[i][8], madd_double_code=op_codes[i][9],
-            sqrt_float_code=op_codes[i][10], sqrt_double_code=op_codes[i][11]
+            add_float_code=backend.op_codes["add_float"], add_double_code=backend.op_codes["add_double"],
+            sub_float_code=backend.op_codes["sub_float"], sub_double_code=backend.op_codes["sub_double"],
+            mul_float_code=backend.op_codes["mul_float"], mul_double_code=backend.op_codes["mul_double"],
+            div_float_code=backend.op_codes["div_float"], div_double_code=backend.op_codes["div_double"],
+            madd_float_code=backend.op_codes["madd_float"], madd_double_code=backend.op_codes["madd_double"],
+            sqrt_float_code=backend.op_codes["sqrt_float"], sqrt_double_code=backend.op_codes["sqrt_double"]
         )
-        with open(COMPLETED_PATH + "/complete_backend_" + names[i] + ".cpp", "w") as file:
+        with open(COMPLETED_PATH + "/complete_backend_" + backend.name + ".cpp", "w") as file:
             file.write(correct_c)
 
         with open(TEMPLATES_PATH + TEMPLATE_BACK_H, "r") as file:
             h_template = Template(file.read())
         correct_h = h_template.render(
-            backend_name=vr_names[i],
-            backend_call_name=names[i],
-            upper_backend_call_name=names[i].upper()
+            backend_name=backend.name,
+            upper_backend_name=backend.name.upper(),
         )
-        with open(COMPLETED_PATH + "/complete_backend_" + names[i] + ".h", "w") as file:
+        with open(COMPLETED_PATH + "/complete_backend_" + backend.name + ".h", "w") as file:
             file.write(correct_h)
 
 
 def main():
-    names, vr_names, op_codes = get_backends_infos()
-    complete_verrou_sources(names, vr_names)
-    create_backend_files(names, vr_names, op_codes)
+    backend_list = get_backends_infos()
+    complete_verrou_sources(backend_list)
+    create_backend_files(backend_list)
 
 
 if __name__ == "__main__":

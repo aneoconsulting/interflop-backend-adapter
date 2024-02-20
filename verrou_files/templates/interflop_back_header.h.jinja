@@ -8,7 +8,7 @@
 /*--- Verrou: a FPU instrumentation tool.                          ---*/
 /*--- Interface for floatin-point operations overloading           ---*/
 /*--- designed to detect denormal and apply flush to zero          ---*/
-/*---                               interflop_{{ backend_call_name }}.h        ---*/
+/*---                               interflop_{{ backend_name }}.h        ---*/
 /*--------------------------------------------------------------------*/
 
 /*
@@ -35,58 +35,58 @@
    The GNU Lesser General Public License is contained in the file COPYING.
 */
 
-#ifndef __INTERFLOP_{{ upper_backend_call_name }}_H
-#define __INTERFLOP_{{ upper_backend_call_name }}_H
+#ifndef __INTERFLOP_{{ upper_backend_name }}_H
+#define __INTERFLOP_{{ upper_backend_name }}_H
 
 //#define DEBUG_PRINT_OP
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define IF{{ upper_backend_call_name }}_FCTNAME(FCT) interflop_{{ backend_call_name }}_##FCT
+#define IF{{ upper_backend_name }}_FCTNAME(FCT) interflop_{{ backend_name }}_##FCT
 
 #include "../interflop.h"
 
-   struct {{ backend_call_name }}_conf {
+   struct {{ backend_name }}_conf {
       int flushtozero; //bool
   };
 
-  typedef struct {{ backend_call_name }}_conf {{ backend_call_name }}_conf_t;
+  typedef struct {{ backend_name }}_conf {{ backend_name }}_conf_t;
 
 
-  void IF{{ upper_backend_call_name }}_FCTNAME(configure)({{ backend_call_name }}_conf_t mode,void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(finalize)(void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(configure)({{ backend_name }}_conf_t mode,void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(finalize)(void* context);
 
-  const char* IF{{ upper_backend_call_name }}_FCTNAME(get_backend_call_name)(void);
-  const char* IF{{ upper_backend_call_name }}_FCTNAME(get_backend_version)(void);
+  const char* IF{{ upper_backend_name }}_FCTNAME(get_backend_name)(void);
+  const char* IF{{ upper_backend_name }}_FCTNAME(get_backend_version)(void);
 
-  void {{ backend_call_name }}_set_denorm_handler(void (*)(void));
+  void {{ backend_name }}_set_denorm_handler(void (*)(void));
 
   extern void (*vr_panicHandler)(const char*);
-  void {{ backend_call_name }}_set_panic_handler(void (*)(const char*));
+  void {{ backend_name }}_set_panic_handler(void (*)(const char*));
 
-  struct interflop_backend_interface_t IF{{ upper_backend_call_name }}_FCTNAME(init)(void ** context);
+  struct interflop_backend_interface_t IF{{ upper_backend_name }}_FCTNAME(init)(void ** context);
 
-  void IF{{ upper_backend_call_name }}_FCTNAME(add_double) (double a, double b, double* res, void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(add_float)  (float a,  float b,  float*  res, void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(sub_double) (double a, double b, double* res, void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(sub_float)  (float a,  float b,  float*  res, void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(mul_double) (double a, double b, double* res, void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(mul_float)  (float a,  float b,  float*  res, void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(div_double) (double a, double b, double* res, void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(div_float)  (float a,  float b,  float*  res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(add_double) (double a, double b, double* res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(add_float)  (float a,  float b,  float*  res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(sub_double) (double a, double b, double* res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(sub_float)  (float a,  float b,  float*  res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(mul_double) (double a, double b, double* res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(mul_float)  (float a,  float b,  float*  res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(div_double) (double a, double b, double* res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(div_float)  (float a,  float b,  float*  res, void* context);
 
-  void IF{{ upper_backend_call_name }}_FCTNAME(sqrt_double) (double a, double* res, void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(sqrt_float)  (float a,  float*  res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(sqrt_double) (double a, double* res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(sqrt_float)  (float a,  float*  res, void* context);
 
-  void IF{{ upper_backend_call_name }}_FCTNAME(cast_double_to_float) (double a, float* b, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(cast_double_to_float) (double a, float* b, void* context);
 
-  void IF{{ upper_backend_call_name }}_FCTNAME(madd_double)(double a, double b, double c, double* res, void* context);
-  void IF{{ upper_backend_call_name }}_FCTNAME(madd_float) (float a,  float b,  float c,  float*  res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(madd_double)(double a, double b, double c, double* res, void* context);
+  void IF{{ upper_backend_name }}_FCTNAME(madd_float) (float a,  float b,  float c,  float*  res, void* context);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* ndef __INTERFLOP_{{ upper_backend_call_name }}_H */
+#endif /* ndef __INTERFLOP_{{ upper_backend_name }}_H */
