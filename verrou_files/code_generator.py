@@ -22,10 +22,27 @@ FUNCTIONS_BEGIN = [
 ]
 
 class backend:
+    """
+    Class containing the backend's name and codes of each of its implemented functions
+
+    Attributes:
+        name: str corresponding of the name of the backend
+        op_codes: dictionnary containing the body of each of its implemented functions
+
+    Methods:
+        op_codes_list_to_dict:  take a list of functions body and place them in the good
+                                key in the op_codes dict
+    """
     name = ""
     op_codes = {}
 
     def op_codes_list_to_dict(self, op_codes_list):
+        """
+        take a list of functions body and place them in the good key in the op_codes dict
+
+        Args:
+            op_codes_list:  list of every bodie's implemented functions in the backend
+        """
         self.op_codes["add_float"] = op_codes_list[0]
         self.op_codes["add_double"] = op_codes_list[1]
         self.op_codes["sub_float"] = op_codes_list[2]
@@ -41,6 +58,13 @@ class backend:
 
 
     def __init__(self, name, op_codes_list):
+        """
+        take a list of functions body and place them in the good key in the op_codes dict
+
+        Args:
+            name:   str corresponding of the name of the backend
+            op_codes_list:  list of every bodie's implemented functions in the backend
+        """
         self.name = name
         self.op_codes_list_to_dict(op_codes_list)
 
@@ -48,11 +72,12 @@ class backend:
 
 def complete_verrou_sources(backend_list):
     """
-    Use the names of the backends to complete the verrou source code templates and save the completed files in the folder "completed_verrou_files"
+    Use backends' information in the backend class to complete the verrou source code
+    templates and save the completed files in the folder "completed_verrou_files"
 
     Args:
-        names:      list of names of every backend folder
-        vr_names:   same as the names list but with the string "vr_" at the beginning of each element
+        backend_list:   list of class containing the backend's name and codes of each of
+                        its implemented functions
     """
     names = [backend.name for backend in backend_list]
     vr_names = [("vr_" + name) for name in names]
@@ -107,12 +132,12 @@ def get_op_codes(path):
 
 def get_backends_infos():
     """
-    Take all the backend folders' names and path and return it as two lists
+    Take all the backend folders' names and functions' codes and return it as a list of
+    backend class
 
     Returns:
-        names:      list of names of every backend folder
-        vr_names:   same as the names list but with the string "vr_" at the beginning of each element
-        op_codes:   list of list of every fuctions' bodies to be implemented in the backend completed code
+        backend_list:   list of class containing the backend's name and codes of each of
+                        its implemented functions
     """
     backend_list = []
 
@@ -126,13 +151,12 @@ def get_backends_infos():
 
 def create_backend_files(backend_list):
     """
-    Iterate on each backend's names, get their implemented functions and complete the templates of
-    the verrou backends then store them completed files folder
+    Iterate on each backend to complete the templates of the verrou backends then
+    store them in the completed files folder
 
     Args:
-        names:      list of names of every backend folder
-        vr_names:   same as the names list but with the string "vr_" at the beginning of each element
-        op_codes:   list of list of every fuctions' bodies to be implemented in the backend completed code
+        backend_list:   list of class containing the backend's name and codes of each of
+                        its implemented functions
     """
     with open(TEMPLATES_PATH + TEMPLATE_BACK_C, "r") as file:
         c_template = Template(file.read())
