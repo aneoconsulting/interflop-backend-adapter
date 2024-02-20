@@ -24,7 +24,7 @@ FUNCTIONS_BEGIN = [
 
 def complete_verrou_sources(names, vr_names):
     """
-    Use the infos to complete the verrou source code templates and save the completed files in the folder "completed_verrou_files"
+    Use the names of the backends to complete the verrou source code templates and save the completed files in the folder "completed_verrou_files"
 
     Args:
         names:      list of names of every backend folder
@@ -81,7 +81,7 @@ def get_op_codes(path):
 
 def get_backends_infos():
     """
-    Take all the backend folders' names and path and return it as a dictionary containing three lists
+    Take all the backend folders' names and path and return it as two lists
 
     Returns:
         names:      list of names of every backend folder
