@@ -1,13 +1,14 @@
 #!/bin/python3.11
 
-from os import listdir, path
+from os import listdir
+from os.path import isdir, basename
 from jinja2 import Template
 
 
 BACKENDS_FOLDER_PATH = "../backend/"
 
 TEMPLATES_PATH = "templates/"
-COMPLETED_PATH = "completed_verrou_files/"
+COMPLETED_PATH = "verificarlo_env/backends/"
 
 VERROU_SOURCE_NAMES = [
     "vr_main.c",
@@ -41,7 +42,7 @@ def get_backends_paths():
 
     list_back = listdir(BACKENDS_FOLDER_PATH)
     for back in list_back:
-        if path.isdir(BACKENDS_FOLDER_PATH + back):
+        if isdir(BACKENDS_FOLDER_PATH + back):
             paths.append(BACKENDS_FOLDER_PATH + back)
 
     return paths
@@ -107,7 +108,7 @@ def create_backend_files(backends_paths):
             sqrt_float_code=op_codes[10], sqrt_double_code=op_codes[11]
         )
 
-        with open(path + "/complete_backend.cpp", "w") as file:
+        with open(COMPLETED_PATH + "/complete_backend_" + basename(path) + ".cpp", "w") as file:
             file.write(correct_c)
 
 
