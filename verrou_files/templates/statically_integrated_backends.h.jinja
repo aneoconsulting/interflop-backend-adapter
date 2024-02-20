@@ -17,5 +17,5 @@
 #include "backend_check_float_max/interflop_check_float_max.h"
 
 {% for backend_name in backend_names -%}
-#include "backend_custom/interflop_{{ backend_name }}.h"
+#include "backend_{{ backend_name }}/interflop_{{ backend_name }}.h"
 {% endfor %}

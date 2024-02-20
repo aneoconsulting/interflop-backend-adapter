@@ -1,131 +1,195 @@
 #!/bin/python3.11
 
-from patch import fromfile
+from os import listdir, path
 from jinja2 import Template
 
 
-BACKEND_ND = 1
-BACKEND_NAME = "vr_custom"
-BACKEND_CALL_NAME = "custom"
+BACKENDS_FOLDER_PATH = "../backend/"
 
-VERROU_FILES = [
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_main.c",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_main.c",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_main.h",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/vr_clo.c",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/Makefile.am",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/interflop_backends/statically_integrated_backends.h",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py",
-    "verrou_repo/valgrind-3.22.0+verrou-dev/verrou/generateBackendInterOperator.py"
+TEMPLATES_PATH = "templates/"
+COMPLETED_PATH = "completed_verrou_files/"
+
+TEMPLATE_BACK_C = "interflop_back_code.cxx.jinja"
+TEMPLATE_BACK_H = "interflop_back_header.h.jinja"
+
+FUNCTIONS_BEGIN = [
+    "add_float:", "add_double:",
+    "sub_float:", "sub_double:",
+    "mul_float:", "mul_double:",
+    "div_float:", "div_double:",
+    "madd_float:", "madd_double:",
+    "sqrt_float:", "sqrt_double:"
 ]
 
-DIFF_FILES = [
-    "diff_files/vr_main_c.diff",
-    "diff_files/vr_main_c.diff",
-    "diff_files/vr_main_h.diff",
-    "diff_files/vr_clo_c.diff",
-    "diff_files/makefile_am.diff",
-    "diff_files/statically_integrated_backends_h.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff",
-    "diff_files/generateBackendInterOperator_py.diff"
-]
+class backend:
+    """
+    Class containing the backend's name and codes of each of its implemented functions
 
-TEMPLATES_FILES = [
-    "templates/vr_main.c1.jinja",
-    "templates/vr_main.c2.jinja",
-    "templates/vr_main.h.jinja",
-    "templates/vr_clo.c.jinja",
-    "templates/makefile.am.jinja",
-    "templates/statically_integrated_backends.h.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja",
-    "templates/generateBackendInterOperator.py.jinja"
-]
+    Attributes:
+        name: str corresponding of the name of the backend
+        op_codes: dictionnary containing the body of each of its implemented functions
 
-GENERATED_HEADERS = [
-    "/*---------------- GENERATED CODE FOR ADDITIONAL BACKENDS 1 -----------------*/\n",
-    "/*---------------- GENERATED CODE FOR ADDITIONAL BACKENDS 2 -----------------*/\n",
-    "  /* GENERATED ADDITONAL BACKEND ENUM */\n",
-    "/*----------------- GENERATED CODE FOR ADDITIONAL BACKENDS ------------------*/\n",
-    "##--------------- GENERATED AUTOMAKE FOR ADDITIONAL BACKENDS ----------------##\n",
-    "/*----------------- GENERATED CODE FOR ADDITIONAL BACKENDS ------------------*/\n",
-    "        # GENERATED ADDITIONAL BACKEND 1 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 2 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 3 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 4 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 5 #\n",
-    "        # GENERATED ADDITIONAL BACKEND 6 #\n"
-]
+    Methods:
+        op_codes_list_to_dict:  take a list of functions body and place them in the good
+                                key in the op_codes dict
+    """
+    name = ""
+    op_codes = {}
 
-GENERATED_FOOTERS = [
-    "/*------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS 1 -------------*/\n",
-    "/*------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS 2 -------------*/\n",
-    "  /* END OF GENERATED ADDITONAL BACKEND ENUM */\n",
-    "/*-------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS --------------*/\n",
-    "##------------ END OF GENERATED AUTOMAKE FOR ADDITIONAL BACKENDS ------------##\n",
-    "/*-------------- END OF GENERATED CODE FOR ADDITIONAL BACKENDS --------------*/\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 1 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 2 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 3 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 4 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 5 #\n",
-    "        # END OF GENERATED ADDITIONAL BACKEND 6 #\n"
-]
+    def op_codes_list_to_dict(self, op_codes_list):
+        """
+        take a list of functions body and place them in the good key in the op_codes dict
+
+        Args:
+            op_codes_list:  list of every bodie's implemented functions in the backend
+        """
+        self.op_codes["add_float"] = op_codes_list[0]
+        self.op_codes["add_double"] = op_codes_list[1]
+        self.op_codes["sub_float"] = op_codes_list[2]
+        self.op_codes["sub_double"] = op_codes_list[3]
+        self.op_codes["mul_float"] = op_codes_list[4]
+        self.op_codes["mul_double"] = op_codes_list[5]
+        self.op_codes["div_float"] = op_codes_list[6]
+        self.op_codes["div_double"] = op_codes_list[7]
+        self.op_codes["madd_float"] = op_codes_list[8]
+        self.op_codes["madd_double"] = op_codes_list[9]
+        self.op_codes["sqrt_float"] = op_codes_list[10]
+        self.op_codes["sqrt_double"] = op_codes_list[11]
 
 
-def patch_file(diff_path):
-    patch = fromfile(diff_path)
-    patch.apply()
+    def __init__(self, name, op_codes_list):
+        """
+        take a list of functions body and place them in the good key in the op_codes dict
+
+        Args:
+            name:   str corresponding of the name of the backend
+            op_codes_list:  list of every bodie's implemented functions in the backend
+        """
+        self.name = name
+        self.op_codes_list_to_dict(op_codes_list)
 
 
-def remove_prev_gen_code(lines, head_line, index):
-    while lines[head_line] != GENERATED_FOOTERS[index]:
-        del lines[head_line]
 
-    return lines
+def complete_verrou_sources(backend_list):
+    """
+    Use backends' information in the backend class to complete the verrou source code
+    templates and save the completed files in the folder "completed_verrou_files"
+
+    Args:
+        backend_list:   list of class containing the backend's name and codes of each of
+                        its implemented functions
+    """
+    names = [backend.name for backend in backend_list]
+    vr_names = [("vr_" + name) for name in names]
+    for template_name in listdir(TEMPLATES_PATH):
+        if path.isfile(TEMPLATES_PATH + template_name) and not template_name.startswith("interflop_back"):
+            with open(TEMPLATES_PATH + template_name, "r") as file:
+                template = Template(file.read())
+            completed_text = template.render(backend_nb=len(names),
+                                        backend_vr_names=vr_names,
+                                        backend_names=names)
+            # template_name[:-6] to remove the .jinja at the end of the name
+            with open(COMPLETED_PATH + template_name[:-6], "w") as file:
+                file.write(completed_text)
 
 
-def add_template_lines(header_line, lines, template_path):
-    with open(template_path, "r") as file:
-        template = Template(file.read())
-    correct_text = template.render(backend_nb=BACKEND_ND, backend_names=[BACKEND_NAME], backend_call_names=[BACKEND_CALL_NAME])
-    correct_lines = correct_text.splitlines(keepends=True)
+def get_op_codes(path):
+    """
+    Take a backend formated file and return a list of the body of every disponible functions found
 
-    lines_applied = lines[:header_line] + correct_lines + lines[header_line:]
+    Args:
+        path: str representing the path to the backend folder
 
-    return lines_applied
+    Returns:
+        List of the body of every functions named in FUNCTION_BEGIN, "" if the function is not found
+    """
+    op_codes = []
+
+    with open(path + "/backend.cpp", "r") as file:
+        lines = file.readlines()
+
+    for begin in FUNCTIONS_BEGIN:
+        code = ""
+        read_body = False
+        got_end = False
+
+        for line in lines:
+            if line.startswith("end_" + begin[:-1]):
+                got_end = True
+                break
+            if read_body:
+                code += line
+            elif line.startswith(begin):
+                read_body = True
+
+        if got_end:
+            op_codes.append(code)
+        else:
+            op_codes.append("")
+
+    return op_codes
+
+
+def get_backends_infos():
+    """
+    Take all the backend folders' names and functions' codes and return it as a list of
+    backend class
+
+    Returns:
+        backend_list:   list of class containing the backend's name and codes of each of
+                        its implemented functions
+    """
+    backend_list = []
+
+    list_back = listdir(BACKENDS_FOLDER_PATH)
+    for back in list_back:
+        if path.isdir(BACKENDS_FOLDER_PATH + back):
+            backend_list.append(backend(back, get_op_codes(BACKENDS_FOLDER_PATH + back)))
+
+    return backend_list
+
+
+def create_backend_files(backend_list):
+    """
+    Iterate on each backend to complete the templates of the verrou backends then
+    store them in the completed files folder
+
+    Args:
+        backend_list:   list of class containing the backend's name and codes of each of
+                        its implemented functions
+    """
+    with open(TEMPLATES_PATH + TEMPLATE_BACK_C, "r") as file:
+        c_template = Template(file.read())
+
+    for backend in backend_list:
+        correct_c = c_template.render(
+            backend_name=backend.name,
+            upper_backend_name=backend.name.upper(),
+
+            add_float_code=backend.op_codes["add_float"], add_double_code=backend.op_codes["add_double"],
+            sub_float_code=backend.op_codes["sub_float"], sub_double_code=backend.op_codes["sub_double"],
+            mul_float_code=backend.op_codes["mul_float"], mul_double_code=backend.op_codes["mul_double"],
+            div_float_code=backend.op_codes["div_float"], div_double_code=backend.op_codes["div_double"],
+            madd_float_code=backend.op_codes["madd_float"], madd_double_code=backend.op_codes["madd_double"],
+            sqrt_float_code=backend.op_codes["sqrt_float"], sqrt_double_code=backend.op_codes["sqrt_double"]
+        )
+        with open(COMPLETED_PATH + "/complete_backend_" + backend.name + ".cpp", "w") as file:
+            file.write(correct_c)
+
+        with open(TEMPLATES_PATH + TEMPLATE_BACK_H, "r") as file:
+            h_template = Template(file.read())
+        correct_h = h_template.render(
+            backend_name=backend.name,
+            upper_backend_name=backend.name.upper(),
+        )
+        with open(COMPLETED_PATH + "/complete_backend_" + backend.name + ".h", "w") as file:
+            file.write(correct_h)
 
 
 def main():
-    for i in range(len(VERROU_FILES)):
-        with open(VERROU_FILES[i], "r") as file:
-
-            if GENERATED_HEADERS[i] not in file:
-                patch_file(DIFF_FILES[i])
-                with open(VERROU_FILES[i], "r") as refreshed_file:
-                    lines = refreshed_file.readlines()
-                header_line = lines.index(GENERATED_HEADERS[i])
-            else:
-                with open(VERROU_FILES[i], "r") as refreshed_file:
-                    lines = refreshed_file.readlines()
-                header_line = lines.index(GENERATED_HEADERS[i]) + 1
-                lines = remove_prev_gen_code(lines, header_line, i)
-
-        lines = add_template_lines(header_line, lines, TEMPLATES_FILES[i])
-
-        with open(VERROU_FILES[i], "w") as file:
-            file.writelines(lines)
+    backend_list = get_backends_infos()
+    complete_verrou_sources(backend_list)
+    create_backend_files(backend_list)
 
 
 if __name__ == "__main__":
