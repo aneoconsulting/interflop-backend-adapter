@@ -9,65 +9,49 @@ BACKENDS_FOLDER_PATH = "../backend/"
 TEMPLATES_PATH = "templates/"
 COMPLETED_PATH = "completed_verrou_files/"
 
-VERROU_SOURCE_NAMES = [
-    "vr_main.c",
-    "vr_main.h",
-    "vr_clo.c",
-    "makefile.am",
-    "statically_integrated_backends.h",
-    "generateBackendInterOperator.py"
-]
 
-
-def complete_verrou_sources(backends_infos):
+def complete_verrou_sources(names, vr_names):
     """
-    Use the infos to complete the verrou source code templates and save the completed files in the folder "completed_verrou_files"
+    Use the names of the backends to complete the verrou source code templates and save the completed files in the folder "completed_verrou_files"
 
     Args:
-        backends_infos: dictionary of three lists:
-            - "names":      the names of every backend folder
-            - "vr_names":   same as "names" but with the string "vr_" at the beginning of each element
-            - "paths":      the relative path of every backend folder
+        names:      list of names of every backend folder
+        vr_names:   same as the names list but with the string "vr_" at the beginning of each element
     """
-    for name in VERROU_SOURCE_NAMES:
-        with open(TEMPLATES_PATH + name + ".jinja", "r") as file:
-            template = Template(file.read())
-        completed_text = template.render(backend_nb=len(backends_infos["names"]),
-                                       backend_vr_names=backends_infos["vr_names"],
-                                       backend_names=backends_infos["names"])
-        with open(COMPLETED_PATH + name, "w") as file:
-            file.write(completed_text)
+    for template_name in listdir(TEMPLATES_PATH):
+        if path.isfile(TEMPLATES_PATH + template_name) and template_name.endswith(".jinja"):
+            with open(TEMPLATES_PATH + template_name, "r") as file:
+                template = Template(file.read())
+            completed_text = template.render(backend_nb=len(names),
+                                        backend_vr_names=vr_names,
+                                        backend_names=names)
+            with open(COMPLETED_PATH + template_name[:-6], "w") as file:
+                file.write(completed_text)
 
 
 def get_backends_infos():
     """
-    Take all the backend folders' names and path and return it as a dictionary containing three lists
+    Take all the backend folders' names and path and return it as two lists
 
     Returns:
-        dictionary of three lists:
-            - "names":      the names of every backend folder
-            - "vr_names":   same as "names" but with the string "vr_" at the beginning of each element
-            - "paths":      the relative path of every backend folder
+        names:      list of names of every backend folder
+        vr_names:   same as the names list but with the string "vr_" at the beginning of each element
     """
-    backends_infos = {
-                        "names": [],
-                        "vr_names": [],
-                        "paths": []
-                    }
+    names = []
+    vr_names = []
 
     list_back = listdir(BACKENDS_FOLDER_PATH)
     for back in list_back:
         if path.isdir(BACKENDS_FOLDER_PATH + back):
-            backends_infos["names"].append(back)
-            backends_infos["vr_names"].append("vr_" + back)
-            backends_infos["paths"].append(BACKENDS_FOLDER_PATH + back)
+            names.append(back)
+            vr_names.append("vr_" + back)
 
-    return backends_infos
+    return names, vr_names
 
 
 def main():
-    backends_infos = get_backends_infos()
-    complete_verrou_sources(backends_infos)
+    names, vr_names, paths = get_backends_infos()
+    complete_verrou_sources(names, vr_names, paths)
 
 
 if __name__ == "__main__":
