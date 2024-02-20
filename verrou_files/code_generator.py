@@ -129,7 +129,7 @@ def create_backend_files(names, vr_names, op_codes):
             madd_float_code=op_codes[i][8], madd_double_code=op_codes[i][9],
             sqrt_float_code=op_codes[i][10], sqrt_double_code=op_codes[i][11]
         )
-        with open(COMPLETED_PATH + "/complete_backend.cpp", "w") as file:
+        with open(COMPLETED_PATH + "/complete_backend_" + names[i] + ".cpp", "w") as file:
             file.write(correct_c)
 
         with open(TEMPLATES_PATH + TEMPLATE_BACK_H, "r") as file:
@@ -139,7 +139,7 @@ def create_backend_files(names, vr_names, op_codes):
             backend_call_name=names[i],
             upper_backend_call_name=names[i].upper()
         )
-        with open(COMPLETED_PATH + "/complete_backend.h", "w") as file:
+        with open(COMPLETED_PATH + "/complete_backend_" + names[i] + ".h", "w") as file:
             file.write(correct_h)
 
 

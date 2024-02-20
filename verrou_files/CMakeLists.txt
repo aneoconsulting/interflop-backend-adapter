@@ -42,9 +42,9 @@ foreach(subdirectory ${subdirectories})
         set(BACKEND_FOLD_PATH "${VERROU_BACKENDS_PATH}/backend_${FOLDER_NAME}")
 
         file(MAKE_DIRECTORY "${BACKEND_FOLD_PATH}")
-        file(RENAME "${subdirectory}/complete_backend.cpp"
+        file(RENAME "${COMPLETED_FILES_PATH}/complete_backend_${FOLDER_NAME}.cpp"
                     "${BACKEND_FOLD_PATH}/interflop_${FOLDER_NAME}.cxx")
-        file(RENAME "${subdirectory}/complete_backend.h"
+        file(RENAME "${COMPLETED_FILES_PATH}/complete_backend_${FOLDER_NAME}.h"
                     "${BACKEND_FOLD_PATH}/interflop_${FOLDER_NAME}.h")
     endif()
 endforeach()
