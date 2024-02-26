@@ -1,120 +1,168 @@
 #!/bin/python3.11
 
-from os import listdir
-from os.path import isdir, basename
+from os import listdir, makedirs
+from os.path import isdir
 from jinja2 import Template
 
 
 BACKENDS_FOLDER_PATH = "../backend/"
-
-TEMPLATES_PATH = "templates/"
 COMPLETED_PATH = "verificarlo_env/backends/"
-
-VERROU_SOURCE_NAMES = [
-    "vr_main.c",
-    "vr_main.h",
-    "vr_clo.c",
-    "makefile.am",
-    "statically_integrated_backends.h",
-    "generateBackendInterOperator.py"
-]
-
-FUNCTIONS_BEGIN = [
-    "add_float:", "add_double:",
-    "sub_float:", "sub_double:",
-    "mul_float:", "mul_double:",
-    "div_float:", "div_double:",
-    "madd_float:", "madd_double:",
-    "sqrt_float:", "sqrt_double:"
-]
-
 TEMPLATE_BACK_C = "templates/interflop_back_code.c.jinja"
 
+FLOAT_TYPE = "float"
+DOUBLE_TYPE = "double"
 
-def get_backends_paths():
+ACCEPTED_OP = [
+    "add", "sub",
+    "mul", "div",
+    "madd", "sqrt"
+]
+
+
+class backend:
     """
-    Take all the backend folders' paths and return it as a list
+    Class containing the backend's name and codes of each of its implemented functions
 
-    Returns:
-        paths:    list of all the relative paths of every backend folders
+    Attributes:
+        name: str corresponding of the name of the backend
+        op_codes: dictionnary containing the body of each of its implemented functions
+
+    Methods:
+        op_codes_list_to_dict:  take a list of functions body and place them in the good
+                                key in the op_codes dict
     """
-    paths = []
-
-    list_back = listdir(BACKENDS_FOLDER_PATH)
-    for back in list_back:
-        if isdir(BACKENDS_FOLDER_PATH + back):
-            paths.append(BACKENDS_FOLDER_PATH + back)
-
-    return paths
+    name = ""
+    op_codes = {}
 
 
-def get_op_codes(path):
-    """
-    Take a backend formated file and return a list of the body of every disponible functions found
+    def _fetch_op_body(self, lines, operation, type):
+        """
+        Take lines of a file and fetch the body of the asked operation and type
+        to return it at the end.
 
-    Args:
-        path: str representing the path to the backend file
+        Args:
+            lines:      list of lines of the backend file
+                        (including the new line characters).
+            operation:  the needed operation, valid ones are in the
+                        ACCEPTED_OP variable.
+            type:       the needed type, can be either "float" or "double".
 
-    Returns:
-        List of the body of every functions named in FUNCTION_BEGIN, "" if the function is not found
-    """
-    op_codes = []
+        Returns:
+            String corresponding to the body of the operation asked.
+            Empty string if not found.
+        """
+        body_begin = operation + "_" + type + ":"
+        body_end = "end_" + operation + "_" + type
 
-    with open(path + "/backend.cpp", "r") as file:
-        lines = file.readlines()
-
-    for begin in FUNCTIONS_BEGIN:
         code = ""
         read_body = False
         got_end = False
 
         for line in lines:
-            if line.startswith("end_" + begin[:-1]):
+            if line.startswith(body_end):
                 got_end = True
                 break
             if read_body:
                 code += line
-            elif line.startswith(begin):
+            elif line.startswith(body_begin):
                 read_body = True
 
         if got_end:
-            op_codes.append(code)
-        else:
-            op_codes.append("")
-
-    return op_codes
+            return code
+        return ""
 
 
-def create_backend_files(backends_paths):
+    def _fetch_operations_codes(self, path):
+        """
+        Take a backend path and go fetch each operations of each types to
+        save their body in the "op_codes" dictionnary.
+
+        Args:
+            path: String representing the path to the backend file.
+        """
+        with open(path, "r") as file:
+            lines = file.readlines()
+
+        for operation in ACCEPTED_OP:
+            body = self._fetch_op_body(lines, operation, FLOAT_TYPE)
+            self.op_codes[operation + "_" + FLOAT_TYPE + "_code"] = body
+
+        for operation in ACCEPTED_OP:
+            body = self._fetch_op_body(lines, operation, DOUBLE_TYPE)
+            self.op_codes[operation + "_" + DOUBLE_TYPE + "_code"] = body
+
+
+    def get_op_codes_dict(self):
+        """
+        Return the bodies of each backend operations in
+        the form of the "op_codes" dictionnary.
+        """
+        return self.op_codes
+
+
+    def get_name(self):
+        """
+        Return the name of the backend.
+        """
+        return self.name
+
+
+    def __init__(self, name, path):
+        """
+        Take the name and the path of the backend and save its informations
+        (name and operation codes) in its own variables.
+
+        Args:
+            name: String corresponding to the name of the backend.
+            path: String corresponding to the path of the backend file.
+        """
+        self.name = name
+        self._fetch_operations_codes(path)
+
+
+def create_backend_files(backends_list):
     """
-    Iterate on each backend's names, get their implemented functions and complete the templates of
-    the verrou backends then store them in the backend respective folder
+    Iterate on each backend and create a compilable backend C file in a folder
+    of the name of the backend.
 
     Args:
-        backends_paths: list of all the relative paths of every backend folders
+        backends_list: List of all the backends found in the backend's folder.
     """
     with open(TEMPLATE_BACK_C, "r") as file:
         c_template = Template(file.read())
 
-    for path in backends_paths:
-        op_codes = get_op_codes(path)
-
+    for backend in backends_list:
         correct_c = c_template.render(
-            add_float_code=op_codes[0], add_double_code=op_codes[1],
-            sub_float_code=op_codes[2], sub_double_code=op_codes[3],
-            mul_float_code=op_codes[4], mul_double_code=op_codes[5],
-            div_float_code=op_codes[6], div_double_code=op_codes[7],
-            madd_float_code=op_codes[8], madd_double_code=op_codes[9],
-            sqrt_float_code=op_codes[10], sqrt_double_code=op_codes[11]
+            backend.get_op_codes_dict()
         )
 
-        with open(COMPLETED_PATH + "/complete_backend_" + basename(path) + ".cpp", "w") as file:
+        makedirs(COMPLETED_PATH + backend.get_name(), exist_ok=True)
+        with open(COMPLETED_PATH + backend.get_name() + "/complete_backend.c", "w") as file:
             file.write(correct_c)
 
 
+def get_backends_infos():
+    """
+    Take all the backend folders' names and functions' codes and return it as a
+    list of backend class.
+
+    Returns:
+        backends_list: List of class containing the backend's name and codes of
+        each of its implemented functions.
+    """
+    backends_list = []
+
+    path_list = listdir(BACKENDS_FOLDER_PATH)
+    for path in path_list:
+        if isdir(BACKENDS_FOLDER_PATH + path):
+            backends_list.append(backend(path, BACKENDS_FOLDER_PATH + path + "/backend.cpp"))
+
+    return backends_list
+
+
 def main():
-    backends_paths = get_backends_paths()
-    create_backend_files(backends_paths)
+    backends_list = get_backends_infos()
+    create_backend_files(backends_list)
 
 
 if __name__ == "__main__":
