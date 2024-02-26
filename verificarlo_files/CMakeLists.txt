@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.12)
 
-
 set(COMMON_PATH "${CMAKE_CURRENT_LIST_DIR}/verificarlo_env/common")
 set(BACKENDS_PATH "${CMAKE_CURRENT_LIST_DIR}/verificarlo_env/backends")
 file(GLOB BACKENDS_LIST "${BACKENDS_PATH}/*.cpp")
 
 file(GLOB subdirectories LIST_DIRECTORIES true "${CMAKE_CURRENT_LIST_DIR}/verificarlo_env/backends/*")
+
+execute_process(COMMAND python3 ./code_generator.py WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 foreach(subdirectory ${subdirectories})
     if(IS_DIRECTORY ${subdirectory})
