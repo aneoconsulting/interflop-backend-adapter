@@ -174,7 +174,7 @@ def create_backend_files(backends_list):
             backend_name=backend.name,
             upper_backend_name=backend.name.upper()
         )
-        with open(COMPLETED_PATH + "/complete_backend_" + backend.name + ".cpp", "w") as file:
+        with open(COMPLETED_PATH + "/complete_backend_" + backend.name + ".h", "w") as file:
             file.write(correct_file)
 
 
