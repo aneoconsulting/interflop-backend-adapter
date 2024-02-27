@@ -21,15 +21,17 @@ ACCEPTED_OP = [
 
 class backend:
     """
-    Class containing the backend's name and codes of each of its implemented functions
+    Class containing the backend's name and codes of each of its implemented functions.
 
     Attributes:
-        name: str corresponding of the name of the backend
-        op_codes: dictionnary containing the body of each of its implemented functions
+        name: String corresponding to name of the backend.
+        op_codes: Dictionnary containing the body of each of its implemented functions.
 
     Methods:
-        op_codes_list_to_dict:  take a list of functions body and place them in the good
-                                key in the op_codes dict
+        _fetch_op_body: Take lines of a file and fetch the body of the asked operation and type
+                        to return it at the end.
+        _fetch_operations_codes: Take a backend path and go fetch each operations of each types to
+                                 save their body in the "op_codes" dictionnary.
     """
     name = ""
     op_codes = {}
@@ -92,21 +94,6 @@ class backend:
             self.op_codes[operation + "_" + DOUBLE_TYPE + "_code"] = body
 
 
-    def get_op_codes_dict(self):
-        """
-        Return the bodies of each backend operations in
-        the form of the "op_codes" dictionnary.
-        """
-        return self.op_codes
-
-
-    def get_name(self):
-        """
-        Return the name of the backend.
-        """
-        return self.name
-
-
     def __init__(self, name, path):
         """
         Take the name and the path of the backend and save its informations
@@ -133,11 +120,11 @@ def create_backend_files(backends_list):
 
     for backend in backends_list:
         correct_c = c_template.render(
-            backend.get_op_codes_dict()
+            backend.op_codes
         )
 
-        makedirs(COMPLETED_PATH + backend.get_name(), exist_ok=True)
-        with open(COMPLETED_PATH + backend.get_name() + "/complete_backend.c", "w") as file:
+        makedirs(COMPLETED_PATH + backend.name, exist_ok=True)
+        with open(COMPLETED_PATH + backend.name + "/complete_backend.c", "w") as file:
             file.write(correct_c)
 
 
