@@ -10,20 +10,20 @@ The interflop backend take an interflop backend and adapt it for any of the thre
 - python3
 - jinja2
 
-    ### For Verrou
+### For Verrou
 
-    Coming soon
+Coming soon
 
-    ### For Verificarlo
+### For Verificarlo
 
-    Coming soon
+Coming soon
 
-    ### For Verrou
-    Follow the Configure and build requirements of the README in the [Verrou repository](https://github.com/edf-hpc/verrou) (The one bellow may not be up to date):
-    - C & C++ compilers (build-essential),
-    - autoconf & automake (automake),
-    - Python 3 (python3)
-    - C standard library with debugging symbols (libc6-dbg).
+### For Verrou
+Follow the Configure and build requirements of the README in the [Verrou repository](https://github.com/edf-hpc/verrou) (The one bellow may not be up to date):
+- C & C++ compilers (build-essential),
+- autoconf & automake (automake),
+- Python 3 (python3)
+- C standard library with debugging symbols (libc6-dbg).
 
 
 ## Installation
