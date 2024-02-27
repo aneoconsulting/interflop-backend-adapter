@@ -21,7 +21,6 @@
 {% for backend_name in backend_names -%}
 #include "replace/backend/interflop_{{ backend_name }}.h"
 {% endfor %}
-
 #include "pin_utils/insert_call.h"
 #include "pin_utils/instrumenter.h"
 #include "pin_utils/symbol_filters.h"
@@ -298,7 +297,7 @@ namespace pene {
       data->TRACE_AddInstrumentFunction();
       break;
       }
-    {% endfor %}
+    {%- endfor %}
     case replace_module_internals::replace_modes::DEBUG_FLOAT_ADD_MULL_SWAP:
       {
       std::cerr << "fp-replace single precision debug mode - swapping single precision additions and multiplications" << std::endl;
