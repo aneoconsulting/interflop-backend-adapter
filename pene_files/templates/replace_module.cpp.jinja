@@ -19,7 +19,7 @@
 #include "replace/wrappers/fma.h"
 
 {% for backend_name in backend_names -%}
-#include "replace/backend/interflop_{{ backend_name }}.h"
+#include "replace/backend/backend_{{ backend_name }}/interflop_{{ backend_name }}.h"
 {% endfor %}
 #include "pin_utils/insert_call.h"
 #include "pin_utils/instrumenter.h"
