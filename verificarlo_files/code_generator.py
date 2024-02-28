@@ -33,9 +33,6 @@ class backend:
         _fetch_operations_codes: Take a backend path and go fetch each operations of each types to
                                  save their body in the "op_codes" dictionnary.
     """
-    name = ""
-    op_codes = {}
-
 
     def _fetch_op_body(self, lines, operation, type):
         """
@@ -103,6 +100,9 @@ class backend:
             name: String corresponding to the name of the backend.
             path: String corresponding to the path of the backend file.
         """
+        self.name = ""
+        self.op_codes = {}
+
         self.name = name
         self._fetch_operations_codes(path)
 
