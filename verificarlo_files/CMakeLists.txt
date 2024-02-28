@@ -8,6 +8,7 @@ file(GLOB subdirectories LIST_DIRECTORIES true "${CMAKE_CURRENT_LIST_DIR}/verifi
 
 execute_process(COMMAND python3 ./code_generator.py WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
+make_directory("${CMAKE_CURRENT_LIST_DIR}/backends_so")
 foreach(subdirectory ${subdirectories})
     if(IS_DIRECTORY ${subdirectory})
         get_filename_component(BACKEND_NAME ${subdirectory} NAME)
