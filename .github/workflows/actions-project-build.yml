@@ -48,21 +48,25 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Clone PENE repository
+      uses: actions/checkout@v3
       with:
         repository: aneoconsulting/PENE
         path: pene_files/
 
     - name: Make verrou_repo directory
+      uses: actions/checkout@v3
       shell: bash
       run: mkdir verrou_files/verrou_repo
 
     - name: Clone Valgrind repository
+      uses: actions/checkout@v3
       shell: bash
       run: |
         cd pene_files/verrou_repo/
         git clone --branch=VALGRIND_3_22_0 --single-branch git://sourceware.org/git/valgrind.git valgrind-3.22.0+verrou-dev
 
     - name: Clone Verrou repository and patch Valgrind
+      uses: actions/checkout@v3
       shell: bash
       run: |
         cd pene_files/verrou_repo/valgrind-3.22.0+verrou-dev
@@ -70,6 +74,7 @@ jobs:
         patch -p1 <verrou/valgrind.diff
 
     - name: Build on all tools
+      uses: actions/checkout@v3
       shell: bash
       run: |
         mkdir build
