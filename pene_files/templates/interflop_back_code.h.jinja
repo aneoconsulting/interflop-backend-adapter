@@ -1,0 +1,49 @@
+#pragma once
+#include <cmath>
+
+namespace pene
+{
+  namespace replace {
+    namespace backend {
+      struct {{ backend_name }}
+      {
+        // the void* arg is for the interflop backen context.
+        static void add_float(float a, float b, float* res, void*) noexcept {
+        {{ add_double_code }}
+        }
+        static void sub_float(float a, float b, float* res, void*) noexcept {
+        {{ sub_float_code }}
+        }
+        static void mul_float(float a, float b, float* res, void*) noexcept {
+        {{ mul_float_code }}
+        }
+        static void div_float(float a, float b, float* res, void*) noexcept {
+        {{ div_float_code }}
+        }
+        static void madd_float(float a, float b, float c, float* res, void*) noexcept {
+        {{ madd_float_code }}
+        }
+
+        static void add_double(double a, double b, double* res, void*) noexcept {
+        {{ add_float_code }}
+        }
+        static void sub_double(double a, double b, double* res, void*) noexcept {
+        {{ sub_double_code }}
+        }
+        static void mul_double(double a, double b, double* res, void*) noexcept {
+        {{ mul_double_code }}
+        }
+        static void div_double(double a, double b, double* res, void*) noexcept {
+        {{ div_double_code }}
+        }
+        static void madd_double(double a, double b, double c, double* res, void*) noexcept {
+        {{ madd_double_code }}
+        }
+        static void* init() noexcept { return nullptr; }
+      };
+
+
+
+    }
+  }
+}
