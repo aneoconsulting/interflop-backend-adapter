@@ -1,6 +1,6 @@
 # Interflop Backend Adapter
 
-The interflop backend adapter take an interflop backend and adapt it for any of the three tools Verrou, Verificarlo and PENE.
+The interflop backend adapter takes an interflop backend and adapt it for any of the three tools Verrou, Verificarlo and PENE.
 
 
 ## Requirements
