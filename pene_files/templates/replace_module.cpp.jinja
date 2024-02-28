@@ -118,7 +118,7 @@ namespace pene {
 
   replace_module::replace_module()
     : module(true)
-    , knob_replace_mode(KNOB_MODE_WRITEONCE, "pintool", "fp-replace", "0", "Enables fp operation replacement.\n\t0: disabled\n\t1: ieee\n\t2: double2float\n\t3: verrou{% for backend_name in backend_names -%}\n\t{{ loop.index0 + 4 }}: {{ backend_name }}{% endfor %}")
+    , knob_replace_mode(KNOB_MODE_WRITEONCE, "pintool", "fp-replace", "0", "Enables fp operation replacement.\n\t0: disabled\n\t1: ieee\n\t2: double2float\n\t3: verrou{% for backend_name in backend_names -%}\n\t{{ loop.index0 + 5 }}: {{ backend_name }}{% endfor %}")
     , knob_exl_symbols(KNOB_MODE_WRITEONCE, "pintool", "exclude", "", "When this option is present, symbols listed in file will be left uninstrumented")
     , knob_incl_source_lines(KNOB_MODE_WRITEONCE, "pintool", "source", "", "When this option is present, only instructions coming from source code lines listed in file are instrumented. [NOT WORKING YET]")
     , knob_rounding_mode(KNOB_MODE_WRITEONCE, "pintool","rounding-mode", "0", "specify rouding mode for verrou backend")
