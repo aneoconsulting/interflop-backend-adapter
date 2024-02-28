@@ -67,7 +67,7 @@ git clone --branch=VALGRIND_3_22_0 --single-branch git://sourceware.org/git/valg
 cd valgrind-3.22.0+verrou-dev
 git clone https://github.com/edf-hpc/verrou.git verrou
 
-patch -p1 <verrou/valgrind.diff>
+patch -p1 <verrou/valgrind.diff
 ```
 
 ## Configure and build
