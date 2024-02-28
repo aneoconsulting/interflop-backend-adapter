@@ -1,7 +1,6 @@
 # Interflop Backend Adapter
 
-The interflop backend take an interflop backend and adapt it for any of the three tool Verrou,
-Verificarlo ~~and PENE~~. (Only Verrou and Verificarlo for now)
+The interflop backend adapter take an interflop backend and adapt it for any of the three tools Verrou, Verificarlo and PENE.
 
 
 ## Requirements
@@ -9,19 +8,22 @@ Verificarlo ~~and PENE~~. (Only Verrou and Verificarlo for now)
 ### Global
 
 - cmake version >= 3.20
+- make
 - python3
 - jinja2
 
 ### For PENE
 
-Coming soon
+Follow the Requirements section of the README in the [PENE repository](https://github.com/aneoconsulting/pene) (The one bellow may not be up to date):
+- g++ compiler for Linux and MSVC compiler for Windows
+- pytest
 
 ### For Verificarlo
 
 No particular specification to build custom backends for Verificarlo
 
 ### For Verrou
-Follow the Configure and build requirements of the README in the [Verrou repository](https://github.com/edf-hpc/verrou) (The one bellow may not be up to date):
+Follow the Configure and build requirements section of the README in the [Verrou repository](https://github.com/edf-hpc/verrou) (The one bellow may not be up to date):
 - C & C++ compilers (build-essential)
 - autoconf & automake (automake)
 - Python 3 (python3)
@@ -41,7 +43,14 @@ From here, only follow the part of the guide with the backend(s) that interest y
 
 ### For PENE
 
-Coming soon
+Get into the "pene_files" folder and clone the PENE repository
+
+```bash
+cd pene_files
+git clone git@github.com:aneoconsulting/PENE.git
+```
+
+Once done, you have all the installation requirements to build a custom backend on PENE
 
 ### For Verificarlo
 
@@ -70,6 +79,8 @@ git clone https://github.com/edf-hpc/verrou.git verrou
 patch -p1 <verrou/valgrind.diff>
 ```
 
+Once done, you have all the installation requirements to build a custom backend on Verrou
+
 ## Configure and build
 
 
@@ -83,7 +94,12 @@ For any build you need, you should use Cmake with the good options
 
 ### For PENE
 
-Coming soon
+```bash
+mkdir build
+cd build
+cmake .. -DBUILD_FOR_PENE=ON
+```
+Once the building is done, you can use the pin binary created in the PENE repository.
 
 ### For Verificarlo
 
@@ -92,6 +108,7 @@ mkdir build
 cd build
 cmake .. -DBUILD_FOR_VERIFICARLO=ON
 ```
+Once the building is done, all the backend's shared objects are in the "backends_so" folder and you can use them in a environnement var with a Verificarlo compiled binary
 
 ### For Verrou
 
@@ -100,14 +117,14 @@ mkdir build
 cd build
 cmake .. -DBUILD_FOR_VERROU=ON
 ```
-Once the build finished, you should source on the "verrou_files/verrou_repo/verrou_software/env.sh" and you will be able to use your backend using the name you given to it
+Once the building is done, you should source on the "verrou_files/verrou_repo/verrou_software/env.sh" and you will be able to use your backend using the name you given to it
 
-### For All frontends (Only Verificarlo and PENE currently)
+### For All frontends
 
 ```bash
 mkdir build
 cd build
-cmake .. -DBUILD_FOR_VERIFICARLO=ON -DBUILD_FOR_VERROU=ON
+cmake .. -DBUILD_FOR_PENE=ON -DBUILD_FOR_VERIFICARLO=ON -DBUILD_FOR_VERROU=ON
 ```
 
 
