@@ -1,0 +1,74 @@
+
+name: CI ADAPTER
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: [ "main" ]
+
+
+
+jobs:
+  Linux:
+    runs-on: ubuntu-latest
+    steps:
+        - name: using the Checkout action
+          uses: actions/checkout@v1
+        - name: Get latest CMake
+          uses: lukka/get-cmake@latest
+        - name: Installing Jinja2
+          run: python -m pip install Jinja2
+        - name: Installing pytest
+          run: python -m pip install pytest
+        - name: Installing make
+          run: python -m pip install make
+        - name: apt
+          run: sudo apt-get -qq update; sudo apt-get install -y libc-dbg python3-numpy python3-matplotlib texlive-latex-extra texlive-fonts-recommended dvipng cm-super
+        - name: Install the requirements for building
+          run: |
+            sudo apt-get install -y build-essential g++ autoconf automake
+        - name: clone PENE 
+          run: |
+            cd pene_files
+            git clone https://github.com/aneoconsulting/PENE.git   
+        - name: clone Valgrind and Verrou
+          run: |
+            mkdir verrou_files/verrou_repo
+            cd verrou_files/verrou_repo
+
+            git clone --branch=VALGRIND_3_22_0 --single-branch git://sourceware.org/git/valgrind.git valgrind-3.22.0+verrou-dev
+
+            cd valgrind-3.22.0+verrou-dev
+            git clone https://github.com/edf-hpc/verrou.git verrou
+            cd verrou
+            checkout 39a16db31a4048311a602922cbf35b18ffc58b9d
+            cd ../
+            patch -p1 <verrou/valgrind.diff
+
+        - name: runing cmake for Verrou 
+          run: |
+            mkdir build
+            cd build
+            cmake .. -DBUILD_FOR_VERROU=ON
+        - name: runing source for verrou
+          run: source verrou_files/verrou_repo/verrou_software/env.sh
+
+        - name: runing cmake for Verificarlo and PENE tools (Linux) 
+          run: |
+            cd build
+            cmake .. -DBUILD_FOR_PENE=ON -DBUILD_FOR_VERIFICARLO=ON
+        - name: Building (Linux)
+          run : |
+            cd build
+            cmake --build .
+        - name: Testing (Linux)
+          run : |
+            cd Test
+            mkdir build
+            cd build
+            cmake ..
+            make 
+            ctest -C Debug --output-o-failure
+
+         
