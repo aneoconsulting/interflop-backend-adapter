@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: using the Checkout action
-          uses: actions/checkout@v1
+          uses: actions/checkout@v2
         - name: Get latest CMake
           uses: lukka/get-cmake@latest
         - name: Installing Jinja2
@@ -32,28 +32,6 @@ jobs:
           run: |
             cd pene_files
             git clone https://github.com/aneoconsulting/PENE.git   
-        - name: clone Valgrind and Verrou
-          run: |
-            mkdir verrou_files/verrou_repo
-            cd verrou_files/verrou_repo
-
-            git clone --branch=VALGRIND_3_22_0 --single-branch git://sourceware.org/git/valgrind.git valgrind-3.22.0+verrou-dev
-
-            cd valgrind-3.22.0+verrou-dev
-            git clone https://github.com/edf-hpc/verrou.git verrou
-            cd verrou
-            checkout 39a16db31a4048311a602922cbf35b18ffc58b9d
-            cd ../
-            patch -p1 <verrou/valgrind.diff
-
-        - name: runing cmake for Verrou 
-          run: |
-            mkdir build
-            cd build
-            cmake .. -DBUILD_FOR_VERROU=ON
-        - name: runing source for verrou
-          run: source verrou_files/verrou_repo/verrou_software/env.sh
-
         - name: runing cmake for Verificarlo and PENE tools (Linux) 
           run: |
             cd build
