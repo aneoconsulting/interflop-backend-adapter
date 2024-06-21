@@ -34,6 +34,7 @@ jobs:
             git clone https://github.com/aneoconsulting/PENE.git   
         - name: runing cmake for Verificarlo and PENE tools (Linux) 
           run: |
+            mkdir build
             cd build
             cmake .. -DBUILD_FOR_PENE=ON -DBUILD_FOR_VERIFICARLO=ON
         - name: Building (Linux)
