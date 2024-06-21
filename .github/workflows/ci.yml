@@ -26,8 +26,17 @@ jobs:
         - name: apt
           run: sudo apt-get -qq update; sudo apt-get install -y libc-dbg python3-numpy python3-matplotlib texlive-latex-extra texlive-fonts-recommended dvipng cm-super
         - name: Install the requirements for building
+          run: sudo apt-get install -y build-essential g++ autoconf automake
+        - name: Install LLVM, clang and opt libtool
+          run: sudo apt install clang lldb lld llvm opt libtool
+        - name: Install Verificarlo
           run: |
-            sudo apt-get install -y build-essential g++ autoconf automake
+            git clone https://github.com/verificarlo/verificarlo.git
+            cd verificarlo
+            ./autogen.sh
+            ./configure --without-flang
+            sudo make
+            sudo make install
         - name: clone PENE 
           run: |
             cd pene_files
