@@ -28,7 +28,7 @@ jobs:
         - name: Install the requirements for building
           run: sudo apt-get install -y build-essential g++ autoconf automake
         - name: Install LLVM, clang and opt libtool
-          run: sudo apt install clang lldb lld llvm opt libtool
+          run: sudo apt install clang lldb lld llvm opt libtool libmpfr-dev parallel
         - name: Install Verificarlo
           run: |
             git clone https://github.com/verificarlo/verificarlo.git
