@@ -10,13 +10,6 @@ import os
 
 class Test_front():
     
-    counterModes = ["0", "1", "2"]
-
-    precisions = ["float", "double"]
-    operations = ["add", "sub", "mul", "div", "fma"]
-    modes = ["scalar", "simd"]
-
-
     verificarlo = "@VERIFICARLO_EXECUTABLE@"
     verrou = "@VERROU_EXECUTABLE@"
     pin = "@PIN_EXECUTABLE@"
@@ -24,8 +17,7 @@ class Test_front():
     new_back = "@BACKEND_VERIFICARLO@"
 
     expected = r"0x1\.000002p\+0"
-
-
+ 
     def launch_PENE(self):
 
         cmdLine = ("{pin} -t {tool} -fp-replace 5 -counter_mode 1 -- {executable}").format(pin = self.pin, 
@@ -71,10 +63,12 @@ class Test_front():
         assert res, "The result is false"
     
 
-    def test_binary(self):
+    def test_binary_PENE(self):
         
         output=self.launch_PENE()
         self.checkout_binary(output, self.expected)
+    
+    def test_binary_Verificarlo(self):
 
         output=self.launch_verificarlo()
         self.checkout_binary(output, self.expected)
