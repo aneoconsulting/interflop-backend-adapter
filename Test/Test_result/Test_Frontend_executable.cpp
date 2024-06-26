@@ -50,34 +50,34 @@ int main(int argc, const char* argv[]){
     }else if (precision.compare("double")==0){
         auto a = std::stod(argv[5]);
         auto b = std::stod(argv[6]);
-        
+        auto acc = a;
         if(operation.compare("add")==0){
             for(int i = 0; i < nbr_loop; i++){
-                a = a + b;
+                acc = acc + b;
             }
         }
         if(operation.compare("sub")==0){
             for(int i = 0; i < nbr_loop; i++){
-                a = a - b;
+                acc = acc - b;
             }
         }
         if(operation.compare("mul")==0){
             for(int i = 0; i < nbr_loop; i++){
-                a = a * b;
+                acc = acc * b;
             }
         }
         if(operation.compare("div")==0){
             for(int i = 0; i < nbr_loop; i++){
-                a = a / b;
+                acc = acc / b;
             }
         }
         if(operation.compare("fma")==0){
             for(int i = 0; i < nbr_loop; i++){
-                a = a * b + a;
+                acc = acc * b + acc;
             }
         }
 
-        std::cout << "Result : " << a << std::endl;
+        std::cout << "Result : " << acc << std::endl;
     }
 
 

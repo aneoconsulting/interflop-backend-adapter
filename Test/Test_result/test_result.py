@@ -8,13 +8,6 @@ import os
 
 class Test_front():
     
-    counterModes = ["0", "1", "2"]
-
-    precisions = ["float", "double"]
-    operations = ["add", "sub", "mul", "div", "fma"]
-    modes = ["scalar", "simd"]
-
-    backend =["libinterflop_ieee.so", "libinterflop_mca.so", "libinterflop_mca_int.so", "libinterflop_bitmask.so", "libinterflop_cancellation.so", "libinterflop_vprec.so"]
 
     verificarlo = "@VERIFICARLO_EXECUTABLE@"
     verrou = "@VERROU_EXECUTABLE@"
