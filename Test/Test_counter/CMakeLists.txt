@@ -60,11 +60,14 @@ add_custom_target(${PROJECT_NAME} ALL DEPENDS
 
 enable_testing()
 
-set(TEST_LIST test_Nbr_Op)
+set(TEST_LIST test_Nbr_Op_PENE test_Nbr_Op_Verificarlo)
 
-add_test(NAME ${TEST_LIST}
-	  COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_CURRENT_BINARY_DIR}/test_counter.py
-)
+foreach(test ${TEST_LIST})
+    add_test(NAME ${test}
+        COMMAND ${Python3_EXECUTABLE} -m pytest -k ${test} ${CMAKE_CURRENT_BINARY_DIR}/test_counter.py
+    )
+endforeach()
+
 
 include_directories("../../../pene_files/PENE/Pin/Linux")
 include_directories("../../../pene_files/PENE/src")

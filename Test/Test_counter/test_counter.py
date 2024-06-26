@@ -8,19 +8,6 @@ import os
 
 class Test_front():
 
-    # executable = "${EXECUTABLE}"
-    # tool = "${PINTOOL}"
-    # pin = "${PIN}"
-    # executable_verificarlo = "${EXECUTABLE2}"
-    
-    counterModes = ["0", "1", "2"]
-
-    precisions = ["float", "double"]
-    operations = ["add", "sub", "mul", "div", "fma"]
-    modes = ["scalar", "simd"]
-
-    backend =["libinterflop_ieee.so", "libinterflop_mca.so", "libinterflop_mca_int.so", "libinterflop_bitmask.so", "libinterflop_cancellation.so", "libinterflop_vprec.so"]
-
     verificarlo = "@VERIFICARLO_EXECUTABLE@"
     verrou = "@VERROU_EXECUTABLE@"
     pin = "@PIN_EXECUTABLE@"
@@ -31,7 +18,7 @@ class Test_front():
     
     def launch_PENE(self, prec, op, mode, nLoop, a, b):
 
-        cmdLine = ("{pin} -t {tool} -fp-replace 5 -counter_mode 1 -- {executable} {prec} {operation} {mode} {nLoop} {a} {b}").format(pin = self.pin, 
+        cmdLine = ("{pin} -t {tool} -fp-replace 6 -counter_mode 1 -- {executable} {prec} {operation} {mode} {nLoop} {a} {b}").format(pin = self.pin, 
                                                                               tool = self.lib,
                                                                               executable = self.verrou,
                                                                               prec = prec,
@@ -47,9 +34,9 @@ class Test_front():
         output = out.stdout.decode('utf-8')
         print("Output", output)
 
-        # p = r"\A=*[\r\n]{1,2}\s*?PENE: Pin Enabled Numerical Exploration\s*?[\r\n]{1,2}=*[\r\n]{1,2}"
-        p = r"Result : "
-        assert re.search(p, output) is not None, f"échec de lancement de commande de PENE"
+        p = r"\A=*[\r\n]{1,2}\s*?PENE: Pin Enabled Numerical Exploration\s*?[\r\n]{1,2}=*[\r\n]{1,2}"
+        # p = r"Result : "
+        assert re.search(p, output) is not None, f"failed to launch instrumentation with PENE"
 
         return output
     
@@ -67,7 +54,7 @@ class Test_front():
         output = out.stdout.decode('utf-8')
 
         p = r"Verrou, Check floating-point rounding errors"
-        assert re.search(p, output) is not None, f"échec de lancement de commande {cmdLine}"
+        assert re.search(p, output) is not None, f"failed to launch instrumentation with Verrou {cmdLine}"
 
         return output
 
@@ -80,7 +67,7 @@ class Test_front():
                                                                                                         operation = op,
                                                                                                         mode = mode,
                                                                                                         nLoop = nLoop,
-                                                                                                        a=a,
+                                                                                                         a=a,
                                                                                                         b=b)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
@@ -91,7 +78,7 @@ class Test_front():
         print(output_str)
 
         p = r"loaded backend"
-        assert re.search(p, output_str) is not None, f"échec de lancement de commande"
+        assert re.search(p, output_str) is not None, f"failed to launch instrumentation with verificarlo"
 
         return output_str
 
@@ -100,7 +87,15 @@ class Test_front():
         regex = prec + r" *?" + op + r" *?" + mode + r" *?(?P<value>\d+)"
         if op == "sub":
             regex = prec + r" *?add *?" + mode  + r" *?(?P<value>\d+)"
-
+        if op=="fma":
+            regex = prec + r" *?add *?" + mode  + r" *?(?P<value>\d+)"
+            regex2 = prec + r" *?mul *?" + mode  + r" *?(?P<value>\d+)"
+            p=re.compile(regex)
+            p2=re.compile(regex2)
+            res=p.search(pattern)
+            res2=p2.search(pattern)
+            assert float(res.group("value"))==float(res2.group("value"))
+            
         p=re.compile(regex)
         assert re.search(p, pattern)
         res=p.search(pattern)
@@ -138,7 +133,7 @@ class Test_front():
         if(op=="add" or op=="sub"):
             if (op=="add"):
                 regex2 = r" *" + "sub" + "=" +r"(?P<value2>\d+)"
-                p=re.compile(regex2)
+                p=re.compile(regex2) 
                 assert re.search(p, pattern)
                 res=p.search(pattern)
             else :
@@ -148,6 +143,7 @@ class Test_front():
                 res=p.search(pattern)
 
             add_sub=float(res.group("value2"))
+        
 
         p=re.compile(regex)   
         assert re.search(p, pattern)
@@ -157,27 +153,41 @@ class Test_front():
     
     
     @pytest.mark.parametrize("prec, op, mode, nLoop, a, b", [
-            ("float", "mul", "scalar", 2, 2, 2),   
-            ("float", "sub", "scalar", 10, 2, 2),    
-            # ("double", "mul", "scalar", 10, 2, 2), 
-            # ("double", "mul", "scalar", 10, 2, 2), 
+            ("float", "mul", "scalar", 10, 2, 2),    
+            ("double", "mul", "scalar", 10, 2, 2),    
+            ("float", "add", "scalar", 10, 2, 2),  
+            ("double", "add", "scalar", 10, 2, 2), 
+            ("float", "sub", "scalar", 10, 2, 2),  
+            ("double", "sub", "scalar", 10, 2, 2),  
+            ("float", "fma", "scalar", 10, 2, 2),  
     ])
-    def test_Nbr_Op(self, prec, op, mode, nLoop, a, b):
+    def test_Nbr_Op_PENE(self, prec, op, mode, nLoop, a, b):
         output_PENE = self.launch_PENE(prec, op, mode, nLoop, a, b)
-        # output_verrou = self.launch_verrou( prec, op, mode, nLoop, a, b)
-        output_verificarlo = self.launch_verificarlo( prec, op, mode, nLoop, a, b)
 
         nb_op_Pene=self.get_Nbrop_PENE(output_PENE, prec, op, mode)
-        # nb_op_Verrou=self.get_Nbrop_verrou(output_verrou, op)
-        nb_op_Vericarlo=self.get_Nbrop_verificarlo(output_verificarlo, op)
 
-        # assert nb_op_Verrou==nLoop, \
-        #     f"Verrou have note the number of instruments required"
-        assert nb_op_Vericarlo==nLoop, \
-            f"Verificarlo have note the number of instruments required"
         assert nb_op_Pene==nLoop, \
             f"PENE have note the number of instruments required"
-
     
+
+    @pytest.mark.parametrize("prec, op, mode, nLoop, a, b", [
+            ("float", "mul", "scalar", 2, 2, 2),     
+            ("float", "sub", "scalar", 10, 2, 2),   
+            ("float", "add", "scalar", 10, 2, 2), 
+            ("double", "mul", "scalar", 10, 2, 2), 
+            ("double", "sub", "scalar", 10, 2, 2), 
+            ("double", "add", "scalar", 10, 2, 2), 
+            ("float", "fma", "scalar", 10, 2, 2),
+    ])
+    def test_Nbr_Op_Verificarlo(self, prec, op, mode, nLoop, a, b):
+        output_verificarlo = self.launch_verificarlo( prec, op, mode, nLoop, a, b)
+
+        nb_op_Vericarlo=self.get_Nbrop_verificarlo(output_verificarlo, op)
+
+        assert nb_op_Vericarlo==nLoop, \
+            f"Verificarlo have note the number of instruments required"
+
+
+
 if __name__ == "__main__":
     pytest.main()
