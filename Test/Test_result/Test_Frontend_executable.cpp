@@ -12,28 +12,74 @@ int main(int argc, const char* argv[]){
     std::string mode{ argv[3] };
     std::string operation{ argv[2] };
     int nbr_loop = std::stoi(argv[4]);
-    float a = std::stof(argv[5]);
-    float b = std::stof(argv[6]);
-    float acc = a;
 
 
-    if(operation.compare("add")==0){
-        for(int i = 0; i < nbr_loop; i++){
-            acc = acc + b;
+    if(precision.compare("float")==0){
+        auto a = std::stof(argv[5]);
+        auto b = std::stof(argv[6]);
+        auto acc = a;
+
+        if(operation.compare("add")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                acc = acc + b;
+            }
         }
-    }
-    if(operation.compare("sub")==0){
-        for(int i = 0; i < nbr_loop; i++){
-            acc = acc - b;
+        if(operation.compare("sub")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                acc = acc - b;
+            }
         }
-    }
-    if(operation.compare("mul")==0){
-        for(int i = 0; i < nbr_loop; i++){
-            acc = acc * b;
+        if(operation.compare("mul")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                acc = acc * b;
+            }
         }
+        if(operation.compare("div")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                acc = acc / b;
+            }
+        }
+        if(operation.compare("fma")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                acc = acc * b + acc;
+            }
+        }
+
+        std::cout << "Result : " << acc << std::endl;
+
+    }else if (precision.compare("double")==0){
+        auto a = std::stod(argv[5]);
+        auto b = std::stod(argv[6]);
+        
+        if(operation.compare("add")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                a = a + b;
+            }
+        }
+        if(operation.compare("sub")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                a = a - b;
+            }
+        }
+        if(operation.compare("mul")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                a = a * b;
+            }
+        }
+        if(operation.compare("div")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                a = a / b;
+            }
+        }
+        if(operation.compare("fma")==0){
+            for(int i = 0; i < nbr_loop; i++){
+                a = a * b + a;
+            }
+        }
+
+        std::cout << "Result : " << a << std::endl;
     }
 
-    std::cout << "Result : " << acc << std::endl;
 
     return 0;
 }

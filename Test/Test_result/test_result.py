@@ -67,8 +67,6 @@ class Test_front():
     
     def launch_verificarlo(self, prec, op, mode, nLoop, a, b):
 
-        #command = f"VFC_BACKENDS=\"libinterflop_ieee.so --count-op\" {self.verificarlo}"
-
         command = ("VFC_BACKENDS=\"{back} --count-op\" {verificalo} {prec} {operation} {mode} {nLoop} {a} {b}").format(back=self.new_back,
                                                                                                         verificalo=self.verificarlo,
                                                                                                         prec = prec,
@@ -125,41 +123,45 @@ class Test_front():
             "mul": lambda a1, b1:a1*b1,
             "div": lambda a1, b1:a1/b1,
             "fma": lambda a1, b1:a1+a1*b1,
-            "mix": lambda a1, b1:a1
         }
         for i in range(int(nLoop)):
             a = switcher[op](a,b)
         return a
-    
-
-    def Check_result(self, prec, op, mode, nLoop, a, b):
-
-        output_PENE = self.launch_PENE(prec, op, mode, nLoop, a, b)
-        # output_verrou = self.launch_verrou(prec, op, mode, nLoop, a, b)
-        output_verificarlo = self.launch_verificarlo(prec, op, mode, nLoop, a, b)
-
-        result_pene=self.get_result_Pene(output_PENE)  
-        result_verificarlo=self.get_result_verificarlo(output_verificarlo)
-        # result_verrou = self.get_result_verrou(output_verrou)
-        result_expected=self.expectResult(op, nLoop, a, b)
-
-        assert result_pene==result_expected, \
-            f"Pene have note the expected result"
-        assert result_verificarlo==result_expected, \
-            f"verificarlo have note the expected result"
-        # assert result_verrou==result_expected, \
-        #     f"Verrou have note the expected result"
-
        
        
     @pytest.mark.parametrize("prec, op, mode, nLoop, a, b", [
-            ("float", "mul", "scalar", 2, 2, 2),
+            ("float", "mul", "scalar", 2, 2, 2),  
             ("float", "sub", "scalar", 10, 2, 2), 
+            ("float", "add", "scalar", 10, 2, 2), 
+            ("float", "fma", "scalar", 10, 2, 2),
             ("double", "mul", "scalar", 10, 2, 2), 
-    ])
-    def test_result(self, prec, op, mode, nLoop, a, b):
-        self.Check_result(prec, op, mode, nLoop, a, b)
+            ("double", "sub", "scalar", 10, 2, 2), 
+            ("double", "add", "scalar", 10, 2, 2),  
 
+    ])
+    def test_result_PENE(self, prec, op, mode, nLoop, a, b):
+        output_PENE = self.launch_PENE(prec, op, mode, nLoop, a, b)
+        result_pene=self.get_result_Pene(output_PENE)  
+        result_expected=self.expectResult(op, nLoop, a, b)
+        assert result_pene==result_expected, \
+            f"Pene have note the expected result"
+
+
+    @pytest.mark.parametrize("prec, op, mode, nLoop, a, b", [
+            ("float", "mul", "scalar", 2, 2, 2),  
+            ("float", "sub", "scalar", 10, 2, 2), 
+            ("float", "add", "scalar", 10, 2, 2), 
+            ("float", "fma", "scalar", 10, 2, 2),
+            ("double", "mul", "scalar", 10, 2, 2), 
+            ("double", "sub", "scalar", 10, 2, 2), 
+            ("double", "add", "scalar", 10, 2, 2),  
+    ])
+    def test_result_Verificarlo(self, prec, op, mode, nLoop, a, b):
+        output_verificarlo = self.launch_verificarlo(prec, op, mode, nLoop, a, b)
+        result_verificarlo=self.get_result_verificarlo(output_verificarlo)
+        result_expected=self.expectResult(op, nLoop, a, b)
+        assert result_verificarlo==result_expected, \
+            f"verificarlo have note the expected result"
 
     
 if __name__ == "__main__":

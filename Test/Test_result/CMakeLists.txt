@@ -51,6 +51,7 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/test_result.py
 
 set(TEST_SCRIPTS test_result.py)
 
+
 list(TRANSFORM TEST_SCRIPTS PREPEND ${CMAKE_CURRENT_BINARY_DIR}/)
 add_custom_target(${PROJECT_NAME} ALL DEPENDS 
     ${TEST_SCRIPTS}
@@ -59,16 +60,15 @@ add_custom_target(${PROJECT_NAME} ALL DEPENDS
 
 enable_testing()
 
-set(TEST_LIST test_result)
 
+# Run each test function individually
+set(TEST_LIST test_result_PENE test_result_Verificarlo)
+
+find_package(Python3 REQUIRED Interpreter)
 foreach(test ${TEST_LIST})
     add_test(NAME ${test}
-      COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_CURRENT_BINARY_DIR}/test_result.py)
+      COMMAND ${Python3_EXECUTABLE} -m pytest -k ${test} ${CMAKE_CURRENT_BINARY_DIR}/test_result.py)
 endforeach()
-
-# add_test(NAME ${TEST_LIST}
-# 	  COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_CURRENT_BINARY_DIR}/test_result.py
-# )
 
 include_directories("../../pene_files/PENE/Pin/Linux")
 include_directories("../../pene_files/PENE/src")
