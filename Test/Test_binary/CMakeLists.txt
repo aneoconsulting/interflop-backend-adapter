@@ -20,7 +20,7 @@ set(LIB_PATH ${PARENT_DIR}/pene_files/PENE/src/libpene.so)
 # set(CMAKE_GENERICS_PATH "${CMAKE_SOURCE_DIR}")
 
 
-set(new_back_verificarlo ${PARENT_DIR}/verificarlo_files/backends_so/libtarget_binary_back.so)
+set(new_back_verificarlo ${PARENT_DIR}/verificarlo_files/backends_so/libtarget_backend_test_1.so)
 
 set(TOOL_PATH ${PARENT_DIR}/pene_files/PENE/cmake/tools)
 
