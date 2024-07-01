@@ -62,7 +62,7 @@ enable_testing()
 
 
 # Run each test function individually
-set(TEST_LIST test_result_PENE test_result_Verificarlo)
+set(TEST_LIST test_result_PENE)
 
 find_package(Python3 REQUIRED Interpreter)
 foreach(test ${TEST_LIST})

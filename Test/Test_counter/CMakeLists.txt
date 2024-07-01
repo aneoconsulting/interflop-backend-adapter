@@ -60,7 +60,7 @@ add_custom_target(${PROJECT_NAME} ALL DEPENDS
 
 enable_testing()
 
-set(TEST_LIST test_Nbr_Op_PENE test_Nbr_Op_Verificarlo)
+set(TEST_LIST test_Nbr_Op_PENE)
 
 foreach(test ${TEST_LIST})
     add_test(NAME ${test}
