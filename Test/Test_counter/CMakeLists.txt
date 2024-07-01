@@ -60,13 +60,33 @@ add_custom_target(${PROJECT_NAME} ALL DEPENDS
 
 enable_testing()
 
-set(TEST_LIST test_Nbr_Op_PENE)
 
-foreach(test ${TEST_LIST})
-    add_test(NAME ${test}
-        COMMAND ${Python3_EXECUTABLE} -m pytest -k ${test} ${CMAKE_CURRENT_BINARY_DIR}/test_counter.py
-    )
-endforeach()
+option(TEST_PENE "Enable testing for PENE" OFF)
+option(TEST_VERIFICARLO "Enable testing for Verificarlo" OFF)
+
+set(PENE_TESTS test_Nbr_Op_PENE)
+set(VERIFICARLO_TESTS test_Nbr_Op_Verificarlo)
+
+set(TEST_LIST)
+
+if(TEST_PENE)
+    list(APPEND TEST_LIST ${PENE_TESTS})
+endif()
+
+if(TEST_VERIFICARLO)
+    list(APPEND TEST_LIST ${VERIFICARLO_TESTS})
+endif()
+
+
+if(NOT "${TEST_LIST}" STREQUAL "")
+    foreach(test ${TEST_LIST})
+        add_test(NAME ${test}
+            COMMAND ${Python3_EXECUTABLE} -m pytest -k ${test} ${CMAKE_CURRENT_BINARY_DIR}/test_counter.py
+        )
+    endforeach()
+else()
+    message(WARNING "No tests specified. Please enable either TEST_PENE or TEST_VERIFICARLO to run specific tests.")
+endif()
 
 
 include_directories("../../../pene_files/PENE/Pin/Linux")
