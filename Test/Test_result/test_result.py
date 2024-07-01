@@ -100,7 +100,6 @@ class Test_front():
 
         return res 
     
-
     def get_result_verificarlo(self, pattern):
 
         regex = r"Result : (?P<value>-?\d+)"
@@ -155,7 +154,8 @@ class Test_front():
         result_expected=self.expectResult(op, nLoop, a, b)
         assert result_verificarlo==result_expected, \
             f"verificarlo have note the expected result"
-
+    
     
 if __name__ == "__main__":
     pytest.main()
+    
