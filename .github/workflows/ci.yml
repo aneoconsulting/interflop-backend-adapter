@@ -8,7 +8,6 @@ on:
     branches: [ "main" ]
 
 
-
 jobs:
   Linux:
     runs-on: ubuntu-latest
@@ -17,17 +16,13 @@ jobs:
           uses: actions/checkout@v2
         - name: Get latest CMake
           uses: lukka/get-cmake@latest
-        - name: Installing Jinja2
-          run: python -m pip install Jinja2
-        - name: Installing pytest
-          run: python -m pip install pytest
-        - name: Installing make
-          run: python -m pip install make
-        - name: apt
-          run: sudo apt-get -qq update; sudo apt-get install -y libc-dbg python3-numpy python3-matplotlib texlive-latex-extra texlive-fonts-recommended dvipng cm-super
-        - name: Install the requirements for building
-          run: sudo apt-get install -y build-essential g++ autoconf automake
-        - name: Install LLVM, clang and opt libtool
+        - name: Install python packages
+          run: python -m pip install Jinja2 make pytest
+        - name: Install requirements for Verrou 
+          run: sudo apt-get -qq update; sudo apt-get install -y libc-dbg
+        - name: Install requirements for building
+          run: sudo apt-get install -y build-essential g++ gcc autoconf automake
+        - name: Install requirements for verificarlo
           run: sudo apt install clang lldb lld llvm opt libtool libmpfr-dev parallel
         - name: Install Verificarlo
           run: |
