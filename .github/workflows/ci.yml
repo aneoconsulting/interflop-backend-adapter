@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: 
+     - main
+     - jr/actions-project-build
+  pull_request:
+    branches: [ "main"  ]
+
+jobs:
+
+  Linux:
+    name: build-linux
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v1
+     - uses: actions/setup-python@v4
+       with:
+         python-version: '3.10.6' 
+     - name: Get latest CMake
+       uses: lukka/get-cmake@latest
+     - name: Installing Jinja2
+       run: python -m pip install Jinja2
+     - name: Installing pytest
+       run: python -m pip install pytest
+     - name: Clone PENE
+       run: |
+         cd pene_files
+         git clone https://github.com/aneoconsulting/PENE.git
+     - name: Clone Verrou
+       run: |
+         cd verrou_files
+         mkdir verrou_repo
+         cd verrou_repo
+         git clone --branch=VALGRIND_3_22_0 --single-branch git://sourceware.org/git/valgrind.git valgrind-3.22.0+verrou-dev
+         cd valgrind-3.22.0+verrou-dev
+         git clone https://github.com/edf-hpc/verrou.git verrou
+         patch -p1 <verrou/valgrind.diff
+     - name: Running cmake
+       run: |
+         ls ${{github.workspace}}
+         mkdir build
+         cd build
+         cmake .. -DBUILD_FOR_PENE=ON -DBUILD_FOR_VERROU=ON
+     - name: Build Solution (Linux)
+       run: |
+         cd build
+         cmake --build .
